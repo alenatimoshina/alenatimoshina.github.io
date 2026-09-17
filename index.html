@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Timoshina Ocean · Oceanographer Alena Timoshina</title>
+<meta name="description" content="Timoshina Ocean ENK — oceanographic consulting from Stjørdal, Norway. Current measurements and NS 9415 reports, NewDEPOMOD, hydrodynamic modelling, GIS maps and fixed-scope data products for aquaculture.">
+<meta property="og:title" content="Timoshina Ocean · Ocean data, surfaced">
+<meta property="og:description" content="Current data checks, NS 9415 reporting, modelling and site maps for Norwegian aquaculture.">
+<meta property="og:type" content="website">
+<meta name="author" content="Alena Timoshina">
+<meta name="copyright" content="© Timoshina Ocean ENK — all rights reserved">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='14' fill='%230a1628'/><path d='M8 38c6-6 10-6 16 0s10 6 16 0 10-6 16 0' stroke='%235ce0d8' stroke-width='5' fill='none' stroke-linecap='round'/><rect x='22' y='10' width='20' height='24' rx='2' fill='%23f0fbfa'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Mulish:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ProfessionalService","name":"Timoshina Ocean ENK","founder":{"@type":"Person","name":"Alena Timoshina","jobTitle":"Oceanographer"},"address":{"@type":"PostalAddress","addressLocality":"Stjørdal","addressRegion":"Trøndelag","addressCountry":"NO"},"email":"aletimoshina@gmail.com","telephone":"+4791829898","areaServed":["NO","BR"],"knowsLanguage":["no","en","pt","ru"],"sameAs":["https://www.linkedin.com/in/alena-timoshina-5387b7298/","https://www.instagram.com/timoshina_ocean/"]}
+</script>
+<style>
+:root{
+  --deep:#0a1628;--abyss:#040b16;--navy:#0d2240;--ocean:#0e4f6e;--teal:#0d8f8a;--turquoise:#1ec5c0;--aqua:#5ce0d8;
+  --white:#f0fbfa;--gray:#9bb9c3;--silver:#c4dde4;--line:rgba(92,224,216,.14);--glass:rgba(13,34,64,.42);
+  --coral:#ff8a6b;--sand:#f3d9a4;
+  --serif:'Italiana',serif;--sans:'Mulish',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace;
+  --pad:clamp(16px,5vw,64px);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--abyss);color:var(--white);font-family:var(--sans);overflow-x:clip;line-height:1.6;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}
+a{color:inherit}
+::selection{background:var(--turquoise);color:var(--deep)}
+:focus-visible{outline:2px solid var(--aqua);outline-offset:3px;border-radius:4px}
+
+/* ---------- fixed ocean layers ---------- */
+#oceanBg{position:fixed;inset:0;z-index:0;background:linear-gradient(180deg,#0e4f6e 0%,#0a2a45 30%,#071a30 60%,#030912 100%);transition:none}
+#lightRays{position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(100deg,rgba(160,240,236,.05) 0 40px,transparent 40px 140px);mask-image:linear-gradient(180deg,#000 0%,transparent 70%);-webkit-mask-image:linear-gradient(180deg,#000 0%,transparent 70%);animation:rays 14s ease-in-out infinite alternate}
+@keyframes rays{from{transform:translateX(-4%) skewX(-3deg)}to{transform:translateX(4%) skewX(3deg)}}
+#snow{position:fixed;inset:0;z-index:1;pointer-events:none}
+#orcaLayer{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+#orca{position:absolute;left:0;top:0;width:min(46vw,560px);opacity:0;will-change:transform;filter:drop-shadow(0 20px 30px rgba(0,0,0,.35));transition:opacity 1.2s}
+#orca.on{opacity:.5}
+#orca .fluke{transform-origin:18px 85px;animation:fluke 1.6s ease-in-out infinite}
+@keyframes fluke{0%,100%{transform:rotate(14deg)}50%{transform:rotate(-14deg)}}
+#orca .pec{transform-origin:292px 106px;animation:pec 3.2s ease-in-out infinite}
+@keyframes pec{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(8deg)}}
+.bubble{position:fixed;z-index:1;border-radius:50%;border:1px solid rgba(200,250,248,.55);background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.5),transparent 60%);pointer-events:none;animation:bub 3.2s ease-in forwards}
+@keyframes bub{to{transform:translate(var(--dx),-180px) scale(1.4);opacity:0}}
+
+main,header,footer,nav{position:relative;z-index:2}
+main{overflow-x:clip}
+
+/* ---------- nav ---------- */
+nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px var(--pad);transition:background .4s,padding .4s,backdrop-filter .4s}
+nav.scrolled{background:rgba(6,16,30,.72);backdrop-filter:blur(14px) saturate(1.3);-webkit-backdrop-filter:blur(14px) saturate(1.3);padding-top:12px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;text-decoration:none;font-family:var(--serif);font-size:1.35rem;letter-spacing:.12em;color:var(--white);white-space:nowrap}
+.logo svg{flex:none}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{text-decoration:none;color:var(--silver);font-size:.76rem;letter-spacing:.14em;text-transform:uppercase;position:relative;padding:4px 0}
+.nav-links a::after{content:'';position:absolute;left:0;bottom:0;height:1px;width:100%;background:var(--aqua);transform:scaleX(0);transform-origin:left;transition:transform .35s}
+.nav-links a:hover::after{transform:scaleX(1)}
+.nav-right{display:flex;align-items:center;gap:12px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:rgba(4,11,22,.4)}
+.lang button{border:0;background:transparent;color:var(--gray);font:600 .7rem var(--sans);letter-spacing:.1em;padding:6px 10px;border-radius:999px;cursor:pointer;transition:all .25s}
+.lang button.on{background:var(--turquoise);color:var(--deep)}
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:999px;font:600 .78rem var(--sans);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;cursor:pointer;border:0;transition:transform .25s,box-shadow .3s,background .3s,color .3s;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--aqua),var(--turquoise) 50%,var(--teal));color:var(--deep);box-shadow:0 10px 40px -10px rgba(30,197,192,.7)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 50px -8px rgba(30,197,192,.9)}
+.btn-ghost{background:rgba(240,251,250,.04);color:var(--white);border:1px solid rgba(240,251,250,.25);backdrop-filter:blur(6px)}
+.btn-ghost:hover{border-color:var(--aqua);color:var(--aqua)}
+.btn-sm{padding:9px 16px;font-size:.68rem}
+.burger{display:none;background:none;border:1px solid var(--line);border-radius:10px;width:40px;height:40px;color:var(--white);cursor:pointer}
+
+/* ---------- depth gauge ---------- */
+.gauge{position:fixed;left:calc(var(--pad) * .35);top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;align-items:center;gap:10px;font-family:var(--mono);font-size:.62rem;color:var(--gray);pointer-events:none}
+.gauge-track{width:2px;height:180px;background:linear-gradient(180deg,var(--aqua),rgba(92,224,216,.08));position:relative;border-radius:2px}
+.gauge-dot{position:absolute;left:50%;top:0;width:10px;height:10px;margin-left:-5px;border-radius:50%;background:var(--aqua);box-shadow:0 0 14px var(--aqua)}
+.gauge-val{color:var(--aqua);font-size:.72rem;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.1em}
+
+/* ---------- hero ---------- */
+#hero{min-height:100svh;position:relative;display:flex;align-items:center;overflow:hidden;isolation:isolate}
+.hero-img{position:absolute;inset:-6% 0 0 0;z-index:-2;background:url('images/hero.jpg') center/cover;will-change:transform}
+#hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(4,11,22,.78) 0%,rgba(4,11,22,.45) 45%,rgba(4,11,22,.1) 75%),linear-gradient(180deg,rgba(4,11,22,.35),rgba(4,11,22,0) 40%,rgba(14,79,110,.6) 85%,rgba(14,79,110,1) 100%)}
+.hero-inner{width:100%;padding:120px var(--pad) 220px;display:grid;grid-template-columns:1.25fr .75fr;gap:40px;align-items:center}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:.7rem;letter-spacing:.28em;text-transform:uppercase;color:var(--aqua);padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:rgba(4,11,22,.35);backdrop-filter:blur(6px)}
+.eyebrow i{width:7px;height:7px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.3}}
+.hero-title{font-family:var(--serif);font-weight:400;font-size:clamp(3rem,8.4vw,7.4rem);line-height:.95;margin:26px 0 22px;letter-spacing:-.01em}
+.hero-title .w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}
+.hero-title .w>span{display:inline-block;transform:translateY(110%);animation:rise 1.1s cubic-bezier(.2,.9,.2,1) forwards}
+.hero-title em{font-style:normal;background:linear-gradient(100deg,var(--aqua),#b9fff9 40%,var(--turquoise) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:rise 1.1s cubic-bezier(.2,.9,.2,1) forwards,shimmer 6s linear infinite}
+@keyframes rise{to{transform:translateY(0)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+.hero-sub{font-size:clamp(1rem,1.4vw,1.18rem);color:var(--silver);max-width:560px;font-weight:300;opacity:0;animation:fade 1s .6s forwards}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:36px;opacity:0;animation:fade 1s .8s forwards}
+@keyframes fade{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.hero-card{justify-self:end;width:min(100%,340px);padding:22px;border-radius:20px;background:rgba(4,11,22,.45);border:1px solid var(--line);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);opacity:0;animation:fade 1s 1s forwards}
+.hc-head{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.66rem;color:var(--gray);margin-bottom:12px}
+.hc-live{color:var(--aqua);display:flex;align-items:center;gap:6px}
+.hc-live i{width:6px;height:6px;border-radius:50%;background:var(--aqua);animation:pulse 1.4s infinite}
+.hc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.hc-grid div{padding:10px;border-radius:12px;background:rgba(92,224,216,.06);border:1px solid var(--line)}
+.hc-grid b{display:block;font-family:var(--serif);font-size:1.6rem;font-weight:400;color:var(--white);line-height:1}
+.hc-grid span{font-size:.64rem;letter-spacing:.08em;text-transform:uppercase;color:var(--gray)}
+#heroWaves{position:absolute;left:0;right:0;bottom:0;height:300px;width:100%;z-index:1}
+.hero-reports{position:absolute;left:0;right:0;bottom:0;height:300px;z-index:1;pointer-events:none;overflow:hidden}
+.mini-report{position:absolute;bottom:0;width:112px;height:144px;border-radius:6px;background:#f6fdfc;color:#0a1628;box-shadow:0 18px 40px -12px rgba(0,0,0,.6),0 0 30px rgba(92,224,216,.45);padding:0 0 8px;transform:translateY(200px);font-family:var(--sans);overflow:hidden}
+.mini-report .mr-h{background:linear-gradient(135deg,var(--teal),var(--turquoise));color:#fff;font:700 .5rem var(--sans);letter-spacing:.12em;padding:6px 8px;text-transform:uppercase}
+.mini-report .mr-t{font:600 .62rem/1.25 var(--sans);padding:7px 8px 4px}
+.mini-report svg{width:100%;height:70px}
+#heroWavesFront{position:absolute;left:0;right:0;bottom:0;height:300px;width:100%;z-index:2;pointer-events:none}
+.scroll-cue{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);z-index:3;font-size:.64rem;letter-spacing:.3em;text-transform:uppercase;color:var(--white);display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none}
+.scroll-cue span{width:22px;height:34px;border:1.5px solid rgba(255,255,255,.7);border-radius:12px;position:relative}
+.scroll-cue span::after{content:'';position:absolute;left:50%;top:6px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:#fff;animation:wheel 1.8s infinite}
+@keyframes wheel{to{transform:translateY(12px);opacity:0}}
+
+/* ---------- marquee ---------- */
+.marquee{border-block:1px solid var(--line);background:rgba(4,11,22,.35);backdrop-filter:blur(6px);overflow:hidden;padding:18px 0;mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.marquee-track{display:flex;gap:48px;width:max-content;animation:marq 42s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-track span{font-family:var(--serif);font-size:1.5rem;color:var(--silver);white-space:nowrap;display:flex;align-items:center;gap:48px}
+.marquee-track span::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--turquoise)}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ---------- generic section ---------- */
+section{padding:clamp(80px,12vw,150px) var(--pad);position:relative}
+.label{display:flex;align-items:center;gap:12px;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--aqua);margin-bottom:16px;font-weight:600}
+.label::before{content:'';width:30px;height:1px;background:currentColor}
+.h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.4rem,5.4vw,4.6rem);line-height:1.02;letter-spacing:-.01em}
+.h2 em{font-style:normal;color:var(--aqua)}
+.lead{color:var(--gray);max-width:620px;margin-top:20px;font-size:1.02rem}
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1)}
+.reveal.in{opacity:1;transform:none}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.split-head{display:flex;justify-content:space-between;align-items:end;gap:30px;flex-wrap:wrap}
+
+/* ---------- about ---------- */
+.about{display:grid;grid-template-columns:.85fr 1.15fr;gap:clamp(40px,7vw,100px);align-items:center}
+.portrait{position:relative;aspect-ratio:3/4;max-width:460px}
+.portrait-frame{position:absolute;inset:0;border-radius:200px 200px 24px 24px;overflow:hidden;border:1px solid var(--line);box-shadow:0 40px 90px -30px rgba(0,0,0,.8),0 0 80px -20px rgba(30,197,192,.35)}
+.portrait-frame img{width:100%;height:100%;object-fit:cover;object-position:50% 30%;transform:scale(1.08);will-change:transform}
+.portrait::before{content:'';position:absolute;inset:-18px;border-radius:220px 220px 36px 36px;border:1px dashed rgba(92,224,216,.3);animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.field-badge{position:absolute;right:-22px;bottom:40px;display:flex;align-items:center;gap:12px;padding:10px 16px 10px 10px;border-radius:999px;background:rgba(4,11,22,.8);border:1px solid var(--line);backdrop-filter:blur(10px);animation:bob 5s ease-in-out infinite}
+.field-badge img{width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--aqua)}
+.field-badge b{display:block;font-size:.8rem}
+.field-badge small{font-size:.66rem;color:var(--gray)}
+@keyframes bob{50%{transform:translateY(-10px)}}
+.about-text p{color:var(--silver);margin-top:18px;font-weight:300;font-size:1.02rem}
+.about-text strong{color:var(--aqua);font-weight:600}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:40px}
+.stat{padding:18px 16px;border-radius:16px;background:rgba(92,224,216,.05);border:1px solid var(--line)}
+.stat b{font-family:var(--serif);font-weight:400;font-size:2.6rem;line-height:1;color:var(--aqua);display:block}
+.stat span{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gray);display:block;margin-top:6px;line-height:1.35}
+.langs{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:.74rem;color:var(--silver);background:rgba(4,11,22,.3)}
+
+/* ---------- process ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px;counter-reset:s}
+.step{padding:30px 26px;position:relative;overflow:hidden}
+.step::before{counter-increment:s;content:'0' counter(s);font-family:var(--serif);font-size:4.6rem;line-height:1;color:rgba(92,224,216,.12);position:absolute;right:18px;top:10px}
+.step h3{font-family:var(--serif);font-weight:400;font-size:1.6rem;margin:18px 0 8px}
+.step p{color:var(--gray);font-size:.92rem}
+.step-ico{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;background:rgba(92,224,216,.08);border:1px solid var(--line)}
+
+/* ---------- product harbour ---------- */
+#products{padding-bottom:60px}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:34px}
+.filters button{border:1px solid var(--line);background:rgba(4,11,22,.35);color:var(--silver);padding:9px 16px;border-radius:999px;font:500 .78rem var(--sans);cursor:pointer;transition:all .25s}
+.filters button:hover{border-color:var(--aqua)}
+.filters button.on{background:var(--white);color:var(--deep);border-color:var(--white)}
+.harbour{display:grid;grid-template-columns:1.1fr .9fr;gap:28px;margin-top:30px;align-items:start}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.pcard{text-align:left;cursor:pointer;padding:18px 18px 16px;border-radius:18px;background:rgba(13,34,64,.38);border:1px solid var(--line);color:var(--white);font-family:var(--sans);position:relative;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),border-color .3s,background .3s;display:flex;flex-direction:column;gap:6px;min-height:148px}
+.pcard::after{content:'';position:absolute;left:var(--mx,50%);top:var(--my,50%);width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;background:radial-gradient(circle,rgba(92,224,216,.22),transparent 65%);opacity:0;transition:opacity .3s;pointer-events:none}
+.pcard:hover::after{opacity:1}
+.pcard:hover{transform:translateY(-3px);border-color:rgba(92,224,216,.45)}
+.pcard.on{background:linear-gradient(160deg,rgba(30,197,192,.22),rgba(13,34,64,.5));border-color:var(--aqua)}
+.pcard .pn{font-family:var(--mono);font-size:.66rem;color:var(--aqua);display:flex;justify-content:space-between;align-items:center}
+.pcard .pt{font-family:var(--serif);font-size:1.28rem;line-height:1.15}
+.pcard .pc{font-size:.72rem;color:var(--gray)}
+.pcard .pd{font-size:.8rem;color:var(--silver);font-weight:300;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:auto}
+.pcard.hide{display:none}
+.tag{font-family:var(--sans);font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:rgba(92,224,216,.1);color:var(--aqua)}
+.surface{position:sticky;top:90px;border-radius:26px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,#0b2036 0%,#0b2a44 55%,#0e4f6e 100%);height:min(700px,calc(100vh - 110px));min-height:600px}
+.surface-sky{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(92,224,216,.18),transparent 60%)}
+.surface-head{position:absolute;top:0;left:0;right:0;padding:16px 20px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:.64rem;color:var(--gray);z-index:4}
+#surfBack,#surfFront{position:absolute;left:0;bottom:0;width:100%;height:190px}
+#surfBack{z-index:1}#surfFront{z-index:3;pointer-events:none}
+.big-report{position:absolute;left:50%;bottom:58px;width:min(78%,340px);z-index:2;background:#f7fdfc;color:#0a1628;border-radius:10px;box-shadow:0 40px 80px -20px rgba(0,0,0,.7),0 0 60px rgba(92,224,216,.35);transform:translate(-50%,120%) rotate(0deg);overflow:hidden;will-change:transform}
+.br-top{background:linear-gradient(135deg,#0a1628,#0e4f6e);color:#fff;padding:14px 16px 12px;position:relative}
+.br-top small{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;color:var(--aqua);display:flex;justify-content:space-between}
+.br-top h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.1;margin-top:6px}
+.br-body{padding:12px 16px 44px}
+.br-for{font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);font-weight:700}
+.br-desc{font-size:.8rem;line-height:1.45;color:#27415a;margin:6px 0 10px}
+.br-viz{border:1px solid #d7ebee;border-radius:8px;background:#f0f9fa;height:130px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.br-viz svg{width:100%;height:100%}
+.br-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;gap:8px}
+.br-foot .note{font-size:.6rem;color:#6a8595;line-height:1.3}
+.br-foot button{background:#0a1628;color:#fff;border:0;border-radius:999px;padding:9px 14px;font:700 .64rem var(--sans);letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.br-foot button:hover{background:var(--teal)}
+.stamp{position:absolute;right:12px;bottom:-6px;transform:rotate(-12deg);border:2px solid var(--coral);color:var(--coral);font:800 .56rem var(--sans);letter-spacing:.12em;padding:3px 7px;border-radius:4px;text-transform:uppercase;background:rgba(255,255,255,.9)}
+.surf-hint{position:absolute;left:0;right:0;top:48px;text-align:center;font-size:.76rem;color:var(--gray);z-index:4;padding:0 20px}
+.allp{margin-top:40px}
+.allp summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:12px;padding:14px 22px;border-radius:999px;border:1px solid var(--line);background:rgba(4,11,22,.4);font-weight:600;font-size:.86rem}
+.allp summary::-webkit-details-marker{display:none}
+.allp summary i{transition:transform .3s;font-style:normal}
+.allp[open] summary i{transform:rotate(45deg)}
+.allgrid{columns:3 280px;column-gap:28px;margin-top:28px}
+.allgroup{break-inside:avoid;margin-bottom:26px}
+.allgroup h4{font-family:var(--serif);font-weight:400;font-size:1.3rem;color:var(--aqua);margin-bottom:8px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.allrow{display:grid;grid-template-columns:28px 1fr;gap:8px;padding:7px 0;border-bottom:1px dashed rgba(92,224,216,.08);font-size:.84rem;cursor:pointer;background:none;border-left:0;border-right:0;border-top:0;color:var(--silver);text-align:left;font-family:var(--sans);width:100%}
+.allrow:hover{color:var(--white)}
+.allrow b{font-family:var(--mono);font-weight:400;font-size:.7rem;color:var(--gray);padding-top:2px}
+.allrow small{display:block;color:var(--gray);font-size:.72rem;line-height:1.35}
+
+/* ---------- calculator ---------- */
+.calc{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,5vw,70px);align-items:center;padding:clamp(24px,4vw,50px)}
+.calc label{display:block;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray);margin:22px 0 8px}
+.calc label output{float:right;font-family:var(--mono);color:var(--aqua);letter-spacing:0}
+.calc input[type=range]{width:100%;accent-color:var(--turquoise)}
+.calc-out{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:26px}
+.calc-out div{padding:12px 14px;border-radius:14px;background:rgba(92,224,216,.06);border:1px solid var(--line)}
+.calc-out b{font-family:var(--serif);font-size:1.8rem;font-weight:400;display:block;line-height:1.1}
+.calc-out span{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gray)}
+.calc svg{width:100%;height:auto;max-height:420px}
+.fine{font-size:.72rem;color:var(--gray);margin-top:14px;line-height:1.5}
+
+/* ---------- core services ---------- */
+.core{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:56px}
+.core .glass{padding:30px;position:relative;overflow:hidden;transition:transform .4s,border-color .3s}
+.core .glass:hover{transform:translateY(-4px);border-color:rgba(92,224,216,.4)}
+.c-a{grid-column:span 7}.c-b{grid-column:span 5}.c-c{grid-column:span 4}.c-d{grid-column:span 4}.c-e{grid-column:span 4}
+.core h3{font-family:var(--serif);font-weight:400;font-size:1.75rem;line-height:1.1;margin:16px 0 10px}
+.core p{color:var(--gray);font-size:.9rem}
+.core ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.core li{font-size:.68rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--silver)}
+.core .deco{position:absolute;right:-30px;bottom:-30px;width:180px;opacity:.25;pointer-events:none}
+
+/* ---------- experience ---------- */
+.xp{display:grid;grid-template-columns:1.2fr .8fr;gap:clamp(30px,6vw,90px);margin-top:56px}
+.tl{position:relative;padding-left:34px}
+.tl::before{content:'';position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--aqua),rgba(92,224,216,.05))}
+.tl-item{position:relative;padding-bottom:36px}
+.tl-item::before{content:'';position:absolute;left:-34px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--abyss);border:2px solid var(--aqua);box-shadow:0 0 0 5px rgba(92,224,216,.08)}
+.tl-date{font-family:var(--mono);font-size:.7rem;color:var(--aqua)}
+.tl-role{font-family:var(--serif);font-size:1.6rem;line-height:1.15;margin:4px 0}
+.tl-org{font-size:.84rem;color:var(--silver);margin-bottom:8px}
+.tl-item ul{list-style:none;color:var(--gray);font-size:.88rem}
+.tl-item li{padding-left:16px;position:relative;margin-top:4px}
+.tl-item li::before{content:'';position:absolute;left:0;top:.7em;width:7px;height:1px;background:var(--aqua)}
+.side h3{font-family:var(--serif);font-weight:400;font-size:1.5rem;margin:0 0 14px}
+.side .block{padding:24px;margin-bottom:14px}
+.tool-row{margin-top:12px}
+.tool-row small{display:block;font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--aqua);margin-bottom:6px}
+.tool-row .langs{margin-top:0;gap:6px}
+.edu{font-size:.86rem;color:var(--silver);padding:10px 0;border-bottom:1px dashed var(--line)}
+.edu b{font-family:var(--mono);font-weight:400;color:var(--aqua);font-size:.7rem;display:block}
+.edu:last-child{border:0}
+
+/* ---------- projects ---------- */
+.proj{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:50px}
+.proj .glass{padding:26px;min-height:240px;display:flex;flex-direction:column}
+.proj .kicker{font-family:var(--mono);font-size:.64rem;color:var(--aqua)}
+.proj h3{font-family:var(--serif);font-weight:400;font-size:1.45rem;line-height:1.15;margin:12px 0 10px}
+.proj p{color:var(--gray);font-size:.86rem}
+
+
+/* ---------- gallery ---------- */
+.gal{columns:4 230px;column-gap:14px;margin-top:50px}
+.gi{break-inside:avoid;display:block;width:100%;margin:0 0 14px;padding:0;border:1px solid var(--line);border-radius:18px;overflow:hidden;position:relative;cursor:zoom-in;background:var(--navy);color:var(--white);font-family:var(--sans);text-align:left;transform:translateZ(0)}
+.gi img{width:100%;height:auto;display:block;transition:transform 1.2s cubic-bezier(.2,.8,.2,1),filter .6s;filter:saturate(.9)}
+.gi:hover img{transform:scale(1.06);filter:saturate(1.1)}
+.gi .gt{position:absolute;top:12px;left:12px;font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;padding:4px 9px;border-radius:999px;background:rgba(4,11,22,.6);backdrop-filter:blur(6px);color:var(--aqua);border:1px solid var(--line)}
+.gi figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 14px 12px;font-size:.84rem;line-height:1.35;background:linear-gradient(0deg,rgba(4,11,22,.9),transparent);transform:translateY(100%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.gi:hover figcaption,.gi:focus-visible figcaption{transform:none}
+.gi::after{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(160,240,236,.25) 50%,transparent 60%);transform:translateX(-120%);transition:transform 1s;pointer-events:none}
+.gi:hover::after{transform:translateX(120%)}
+@media (hover:none){.gi figcaption{transform:none}}
+.lb{position:fixed;inset:0;z-index:100;background:rgba(2,6,12,.92);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;padding:60px 70px;opacity:0;pointer-events:none;transition:opacity .35s}
+.lb.open{opacity:1;pointer-events:auto}
+.lb figure{max-width:min(1200px,100%);max-height:100%;display:flex;flex-direction:column;align-items:center;gap:14px;transform:scale(.96);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+.lb.open figure{transform:none}
+.lb img{max-width:100%;max-height:calc(100vh - 170px);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.lb figcaption{text-align:center;color:var(--silver);font-size:.95rem}
+.lb figcaption b{display:block;font-family:var(--mono);font-weight:400;font-size:.66rem;color:var(--aqua);letter-spacing:.12em;margin-bottom:4px}
+.lb button{position:absolute;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:rgba(13,34,64,.7);color:var(--white);font-size:1.3rem;cursor:pointer;display:grid;place-items:center}
+.lb button:hover{border-color:var(--aqua);color:var(--aqua)}
+.lb .x{top:16px;right:16px}.lb .pv{left:14px;top:50%;margin-top:-24px}.lb .nx{right:14px;top:50%;margin-top:-24px}
+@media (max-width:600px){.gal{columns:2 140px;column-gap:10px}.gi{margin-bottom:10px;border-radius:12px}.lb{padding:60px 12px 80px}.lb .pv,.lb .nx{top:auto;bottom:16px;margin:0}.lb .pv{left:calc(50% - 60px)}.lb .nx{right:calc(50% - 60px)}}
+
+/* ---------- reach ---------- */
+.reach{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:50px}
+.place{padding:28px;position:relative;overflow:hidden}
+.place .coord{font-family:var(--mono);font-size:.66rem;color:var(--gray)}
+.place h3{font-family:var(--serif);font-weight:400;font-size:2rem;margin:10px 0 6px}
+.place p{font-size:.86rem;color:var(--silver)}
+.place svg{position:absolute;right:-10px;top:-10px;width:120px;opacity:.18}
+.pubs{margin-top:40px;display:grid;gap:10px}
+.pub{display:grid;grid-template-columns:80px 1fr;gap:18px;padding:18px 0;border-bottom:1px solid var(--line)}
+.pub b{font-family:var(--serif);font-size:1.8rem;font-weight:400;color:var(--aqua)}
+.pub h4{font-family:var(--serif);font-weight:400;font-size:1.2rem;line-height:1.3}
+.pub small{color:var(--gray);font-size:.78rem}
+
+/* ---------- contact ---------- */
+.contact{display:grid;grid-template-columns:1fr 1fr;gap:clamp(30px,6vw,80px);margin-top:50px;align-items:start}
+.clinks{display:grid;gap:10px;margin-top:30px}
+.clink{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:16px;border:1px solid var(--line);text-decoration:none;background:rgba(4,11,22,.35);transition:border-color .3s,transform .3s}
+.clink:hover{border-color:var(--aqua);transform:translateX(4px)}
+.clink svg{flex:none;color:var(--aqua)}
+.clink small{display:block;font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gray)}
+form.glass{padding:clamp(22px,3vw,36px);display:grid;gap:14px}
+.f label{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gray);margin-bottom:6px}
+.f input,.f select,.f textarea{width:100%;padding:13px 14px;border-radius:12px;border:1px solid rgba(240,251,250,.14);background:rgba(4,11,22,.5);color:var(--white);font:400 .92rem var(--sans);outline:none;transition:border-color .25s}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--aqua)}
+.f select option{background:var(--deep)}
+.f textarea{min-height:120px;resize:vertical}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-note{font-size:.72rem;color:var(--gray)}
+
+footer{padding:40px var(--pad);border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:.76rem;color:var(--gray);background:rgba(2,6,12,.7)}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .harbour{grid-template-columns:1fr}
+  .surface{position:relative;top:0;order:-1;height:600px}
+  .proj{grid-template-columns:1fr 1fr}
+  .c-a,.c-b{grid-column:span 12}.c-c,.c-d,.c-e{grid-column:span 6}.c-e{grid-column:span 12}
+}
+@media (max-width:900px){
+  .nav-links{display:none;position:absolute;top:100%;left:12px;right:12px;flex-direction:column;gap:0;background:rgba(6,16,30,.96);border:1px solid var(--line);border-radius:18px;padding:10px}
+  .nav-links.open{display:flex}
+  .nav-links a{display:block;padding:12px}
+  .burger{display:grid;place-items:center}
+  .nav-right .btn{display:none}
+  .gauge{display:none}
+  .hero-inner{grid-template-columns:1fr;padding-bottom:260px}
+  .hero-card{justify-self:start}
+  .about,.calc,.xp,.contact{grid-template-columns:1fr}
+  .portrait{margin:0 auto;width:80%}
+  .stats{grid-template-columns:1fr 1fr}
+  .steps,.reach{grid-template-columns:1fr}
+}
+@media (max-width:600px){
+  .pgrid,.proj,.f2{grid-template-columns:1fr}
+  .c-c,.c-d,.c-e{grid-column:span 12}
+  .field-badge{right:0}
+  .hero-card{display:none}
+  #hero::before{background:linear-gradient(180deg,rgba(4,11,22,.55),rgba(4,11,22,.7) 60%,rgba(14,79,110,1) 100%)}
+  .filters{flex-wrap:nowrap;overflow-x:auto;margin-inline:calc(var(--pad) * -1);padding:0 var(--pad) 6px;scrollbar-width:none}
+  .filters button{flex:none}
+  .logo span{display:none}
+  .pub{grid-template-columns:1fr;gap:4px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+  .reveal{opacity:1;transform:none}
+  #orcaLayer,#snow{display:none}
+}
+</style>
+</head>
+<body>
+<div id="oceanBg"></div>
+<div id="lightRays"></div>
+<canvas id="snow"></canvas>
+<div id="orcaLayer" aria-hidden="true">
+<svg id="orca" viewBox="-30 0 430 160">
+  <defs>
+    <linearGradient id="ob" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2a3a"/><stop offset=".55" stop-color="#05090f"/><stop offset="1" stop-color="#0b1520"/></linearGradient>
+    <linearGradient id="ow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#cfe6ea"/></linearGradient>
+  </defs>
+  <g class="fluke"><path d="M22,85 C10,72 -4,60 -24,54 C-15,68 -11,78 -7,85 C-11,92 -15,102 -24,116 C-4,110 10,98 22,85 Z" fill="url(#ob)"/></g>
+  <path d="M235,53 C232,32 228,14 220,2 C240,14 258,36 270,52 Z" fill="url(#ob)"/>
+  <path d="M392,82 C382,62 342,50 292,50 C252,50 222,48 182,55 C142,62 102,72 62,78 C46,80 32,82 16,84 C30,88 46,90 62,92 C112,100 152,112 202,114 C262,116 322,112 362,100 C382,94 394,90 392,82 Z" fill="url(#ob)"/>
+  <path d="M206,57 C222,52 250,52 272,57 C252,64 224,64 206,57 Z" fill="#8aa0ae" opacity=".55"/>
+  <ellipse cx="330" cy="70" rx="17" ry="6.5" transform="rotate(-10 330 70)" fill="url(#ow)"/>
+  <path d="M378,94 C346,108 300,112 256,106 C290,99 336,97 378,94 Z" fill="url(#ow)"/>
+  <path d="M156,110 C138,100 120,96 98,98 C118,105 136,111 156,113 Z" fill="url(#ow)" opacity=".9"/>
+  <g class="pec"><path d="M300,106 C292,124 280,140 262,150 C272,132 280,118 284,106 Z" fill="url(#ob)"/></g>
+  <path d="M300,58 C320,60 350,64 380,76" stroke="rgba(160,240,236,.25)" stroke-width="1.5" fill="none"/>
+</svg>
+</div>
+
+<nav id="nav" aria-label="Main">
+  <a class="logo" href="#hero" aria-label="Timoshina Ocean home">
+    <svg width="30" height="30" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="rgba(92,224,216,.12)" stroke="rgba(92,224,216,.4)"/><rect x="22" y="12" width="20" height="24" rx="2" fill="#f0fbfa"/><rect x="26" y="18" width="12" height="2" fill="#0d8f8a"/><rect x="26" y="23" width="9" height="2" fill="#9bb9c3"/><path d="M8 38c6-6 10-6 16 0s10 6 16 0 10-6 16 0" stroke="#5ce0d8" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M8 48c6-6 10-6 16 0s10 6 16 0 10-6 16 0" stroke="#1ec5c0" stroke-width="3" fill="none" stroke-linecap="round" opacity=".6"/></svg>
+    <span>Timoshina Ocean</span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#about" data-i18n="nav.about">About</a></li>
+    <li><a href="#products" data-i18n="nav.products">Products</a></li>
+    <li><a href="#services" data-i18n="nav.services">Consulting</a></li>
+    <li><a href="#experience" data-i18n="nav.xp">Experience</a></li>
+    <li><a href="#gallery" data-i18n="nav.gallery">Field log</a></li>
+    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="en" class="on">EN</button>
+      <button type="button" data-lang="no">NO</button>
+    </div>
+    <a href="#contact" class="btn btn-primary btn-sm" data-i18n="nav.cta">Send your data</a>
+    <button class="burger" id="burger" aria-label="Menu" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg></button>
+  </div>
+</nav>
+
+<div class="gauge" aria-hidden="true">
+  <span>0 m</span>
+  <div class="gauge-track"><div class="gauge-dot" id="gDot"></div></div>
+  <span class="gauge-val" id="gVal">0 m</span>
+</div>
+
+<main>
+<header id="hero">
+  <div class="hero-img" id="heroImg"></div>
+  <div class="hero-inner">
+    <div>
+      <span class="eyebrow"><i></i><span data-i18n="hero.eyebrow">Oceanographer · Stjørdal, Norway</span></span>
+      <h1 class="hero-title" id="heroTitle"></h1>
+      <p class="hero-sub" data-i18n="hero.sub">I turn raw current data, models and public registers into clear, compliant reports for Norwegian aquaculture — so your next decision is based on what the water is actually doing.</p>
+      <div class="hero-cta">
+        <a href="#products" class="btn btn-primary"><span data-i18n="hero.cta1">Explore products</span> <span aria-hidden="true">→</span></a>
+        <a href="#contact" class="btn btn-ghost" data-i18n="hero.cta2">Book a 20-min call</a>
+      </div>
+    </div>
+    <aside class="hero-card" aria-label="Summary">
+      <div class="hc-head"><span>TIMOSHINA_OCEAN.ENK</span><span class="hc-live"><i></i>ONLINE</span></div>
+      <svg viewBox="0 0 300 80" width="100%" aria-hidden="true"><defs><linearGradient id="hg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5ce0d8" stop-opacity=".5"/><stop offset="1" stop-color="#5ce0d8" stop-opacity="0"/></linearGradient></defs><path id="heroSpark" d="" fill="url(#hg)"/><path id="heroSparkL" d="" stroke="#5ce0d8" stroke-width="1.5" fill="none"/></svg>
+      <div class="hc-grid">
+        <div><b>8+</b><span data-i18n="hc.years">years in applied oceanography</span></div>
+        <div><b>100+</b><span data-i18n="hc.deploy">current meter deployments</span></div>
+        <div><b>NS 9415</b><span data-i18n="hc.std">NYTEK reporting</span></div>
+        <div><b>4</b><span data-i18n="hc.lang">working languages</span></div>
+      </div>
+    </aside>
+  </div>
+  <canvas id="heroWaves" aria-hidden="true"></canvas>
+  <div class="hero-reports" id="heroReports" aria-hidden="true"></div>
+  <canvas id="heroWavesFront" aria-hidden="true"></canvas>
+  <a class="scroll-cue" href="#about"><span></span><em data-i18n="hero.dive" style="font-style:normal">Dive in</em></a>
+</header>
+
+<div class="marquee" aria-hidden="true"><div class="marquee-track" id="marquee"></div></div>
+
+<section id="about">
+  <div class="about">
+    <div class="portrait reveal">
+      <div class="portrait-frame"><img id="portraitImg" src="images/portrait.jpg" alt="Alena Timoshina, oceanographer" width="720" height="1263"></div>
+      <div class="field-badge"><img src="images/field.jpg" alt="Alena in the field" width="113" height="150"><div><b data-i18n="about.badge1">In the field since 2015</b><small data-i18n="about.badge2">Arctic · Norway · Brazil</small></div></div>
+    </div>
+    <div class="about-text reveal">
+      <div class="label" data-i18n="about.label">About</div>
+      <h2 class="h2" data-i18n="about.title">Field sense.<br><em>Model brain.</em></h2>
+      <p data-i18n="about.p1">I'm <strong>Alena Timoshina</strong>, an oceanographer with more than 8 years of applied oceanography, aquaculture advisory, current analysis and environmental modelling in Norway and abroad.</p>
+      <p data-i18n="about.p2">At Sea Eco AS I planned and delivered current studies for Norwegian fish farms from measurement strategy to final report — <strong>over 100 successful current meter deployments</strong>, NS 9415 / NYTEK reporting and <strong>NewDEPOMOD</strong> particle-transport modelling. I also prepare current data in Fiskeridirektoratet's <strong>FD format</strong>.</p>
+      <p data-i18n="about.p3">My master's focused on numerical modelling of coastal hydrodynamics. Since then I've added OSCAR oil-spill modelling and Delft3D FM training, and validated HYCOM and Copernicus/GLORYS against observations at UFES in Brazil. Today, through <strong>Timoshina Ocean ENK</strong>, I combine all of it with Python automation to deliver fast, consistent products.</p>
+      <div class="stats">
+        <div class="stat"><b class="count" data-to="8" data-suf="+">0</b><span data-i18n="stat.1">years experience</span></div>
+        <div class="stat"><b class="count" data-to="100" data-suf="+">0</b><span data-i18n="stat.2">instrument deployments</span></div>
+        <div class="stat"><b class="count" data-to="3">0</b><span data-i18n="stat.3">countries worked</span></div>
+        <div class="stat"><b class="count" data-to="4">0</b><span data-i18n="stat.4">languages</span></div>
+      </div>
+      <div class="langs">
+        <span class="chip" data-i18n="lang.no">Norwegian — professional, technical reports since 2018</span>
+        <span class="chip" data-i18n="lang.en">English — advanced</span>
+        <span class="chip" data-i18n="lang.pt">Portuguese — B2</span>
+        <span class="chip" data-i18n="lang.ru">Russian — native</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="how" style="padding-top:0">
+  <div class="reveal"><div class="label" data-i18n="how.label">How it works</div><h2 class="h2" data-i18n="how.title">From raw file<br>to <em>finished report.</em></h2></div>
+  <div class="steps">
+    <div class="step glass reveal"><div class="step-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5ce0d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3"/></svg></div><h3 data-i18n="how.s1t">Send your data</h3><p data-i18n="how.s1p">Raw instrument files, CSV, model output or just a locality number. I confirm the scope and can send you my price list before we start.</p></div>
+    <div class="step glass reveal"><div class="step-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5ce0d8" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/><path d="M8 11h6M11 8v6"/></svg></div><h3 data-i18n="how.s2t">I check & analyse</h3><p data-i18n="how.s2p">Standardised Python workflows plus a trained oceanographer's eye: spikes, tilt, gaps, depths and anything that doesn't look like real water.</p></div>
+    <div class="step glass reveal"><div class="step-ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5ce0d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 18c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><rect x="8" y="3" width="8" height="11" rx="1"/><path d="M10 7h4M10 10h3"/></svg></div><h3 data-i18n="how.s3t">Your report surfaces</h3><p data-i18n="how.s3p">A clean, consistently formatted PDF, figure pack or dataset — ready for your application, your client or your farm manager.</p></div>
+  </div>
+</section>
+
+<section id="products">
+  <div class="split-head reveal">
+    <div><div class="label" data-i18n="prod.label">Product harbour</div><h2 class="h2" data-i18n="prod.title">Pick a product.<br><em>Watch it surface.</em></h2></div>
+    <p class="lead" data-i18n="prod.lead">Small, fixed-scope deliverables for farms, consultants and municipalities. Tap any card — the report rises from the waves with a preview of what you receive.</p>
+  </div>
+  <div class="filters reveal" id="filters" role="tablist"></div>
+  <div class="harbour">
+    <div class="pgrid" id="pgrid"></div>
+    <div class="surface reveal" id="surface" aria-live="polite">
+      <div class="surface-sky"></div>
+      <div class="surface-head"><span id="surfCount">01 / 20</span><span data-i18n="prod.preview">PREVIEW · TIMOSHINA OCEAN</span></div>
+      <canvas id="surfBack"></canvas>
+      <article class="big-report" id="bigReport">
+        <div class="br-top"><small><span id="brNum">#01</span><span id="brCat">CURRENTS</span></small><h3 id="brTitle">—</h3></div>
+        <div class="br-body">
+          <div class="br-for" id="brFor"></div>
+          <p class="br-desc" id="brDesc"></p>
+          <div class="br-viz" id="brViz"></div>
+          <div class="br-foot"><span class="note" id="brNote"></span><button type="button" id="brAsk" data-i18n="prod.ask">Request this →</button></div>
+        </div>
+      </article>
+      <canvas id="surfFront"></canvas>
+    </div>
+  </div>
+  <details class="allp reveal">
+    <summary><i>+</i> <span data-i18n="prod.all">See all 50 products</span></summary>
+    <div class="allgrid" id="allgrid"></div>
+  </details>
+</section>
+
+<section id="calculator">
+  <div class="glass calc reveal">
+    <div>
+      <div class="label" data-i18n="calc.label">Free tool · Product 10</div>
+      <h2 class="h2" style="font-size:clamp(2rem,4vw,3.2rem)" data-i18n="calc.title">Where should your<br><em>current meters</em> go?</h2>
+      <label><span data-i18n="calc.net">Net (cage) depth</span><output id="oNet">20 m</output></label>
+      <input type="range" id="rNet" min="5" max="60" value="20" step="1">
+      <label><span data-i18n="calc.sea">Seabed depth at the site</span><output id="oSea">80 m</output></label>
+      <input type="range" id="rSea" min="20" max="300" value="80" step="1">
+      <div class="calc-out">
+        <div><b>5 m</b><span data-i18n="calc.o1">Water exchange (±2 m)</span></div>
+        <div><b>15 m</b><span data-i18n="calc.o2">Dimensioning (±3 m)</span></div>
+        <div><b id="vSpread">50 m</b><span data-i18n="calc.o3">Spreading current</span></div>
+        <div><b id="vBottom">79 m</b><span data-i18n="calc.o4">Bottom current</span></div>
+      </div>
+      <p class="fine" data-i18n="calc.fine">Indicative only: spreading current midway between net bottom and seabed (max. 50 m below net bottom); bottom current about 1 m above the seabed, following NS 9415:2021 and Fiskeridirektoratet's forundersøkelse guidance. Local topography can change the answer — let me check your site.</p>
+    </div>
+    <svg id="calcSvg" viewBox="0 0 360 420" role="img" aria-label="Water column diagram with measurement depths"></svg>
+  </div>
+</section>
+
+<section id="services">
+  <div class="reveal"><div class="label" data-i18n="svc.label">Consulting</div><h2 class="h2" data-i18n="svc.title">Bigger questions?<br><em>Full projects.</em></h2></div>
+  <div class="core">
+    <article class="glass c-a reveal">
+      <span class="tag" data-i18n="svc.a.tag">Core</span>
+      <h3 data-i18n="svc.a.t">Current measurements & NS 9415 reports</h3>
+      <p data-i18n="svc.a.p">Measurement strategy, instrument setup, QA/QC, analysis and reporting for water-exchange, dimensioning, spreading and bottom currents — including conversion to Fiskeridirektoratet's FD format.</p>
+      <ul><li>Aquadopp</li><li>AquaPro</li><li>Signature 500</li><li>ADCP</li><li>SeaGuard / RCM</li><li>NYTEK</li></ul>
+      <svg class="deco" viewBox="0 0 100 100"><g fill="none" stroke="#5ce0d8"><circle cx="50" cy="50" r="45"/><circle cx="50" cy="50" r="30"/><circle cx="50" cy="50" r="15"/><path d="M50 50L50 8M50 50L85 30M50 50L80 72M50 50L24 84M50 50L14 40" stroke-width="3"/></g></svg>
+    </article>
+    <article class="glass c-b reveal">
+      <span class="tag" data-i18n="svc.b.tag">Modelling</span>
+      <h3 data-i18n="svc.b.t">NewDEPOMOD & particle transport</h3>
+      <p data-i18n="svc.b.p">Model setup, input quality control, sedimentation and organic load footprints, and validation against measured currents.</p>
+      <ul><li>NewDEPOMOD</li><li>Python</li><li>Olex</li></ul>
+    </article>
+    <article class="glass c-c reveal">
+      <span class="tag" data-i18n="svc.c.tag">Modelling</span>
+      <h3 data-i18n="svc.c.t">Hydrodynamics & oil spill</h3>
+      <p data-i18n="svc.c.p">Delft3D FM (Deltares-trained) and OSCAR simulations; validation of HYCOM and Copernicus/GLORYS products.</p>
+      <ul><li>Delft3D FM</li><li>OSCAR</li><li>HYCOM</li><li>GLORYS</li></ul>
+    </article>
+    <article class="glass c-d reveal">
+      <span class="tag" data-i18n="svc.d.tag">Maps</span>
+      <h3 data-i18n="svc.d.t">GIS & ocean mapping</h3>
+      <p data-i18n="svc.d.p">Site maps, bathymetry and survey figures in ArcGIS Pro and Olex, built for applications and hearings.</p>
+      <ul><li>ArcGIS Pro</li><li>Olex</li><li>ODV</li><li>Google Earth</li></ul>
+    </article>
+    <article class="glass c-e reveal">
+      <span class="tag" data-i18n="svc.e.tag">Environment</span>
+      <h3 data-i18n="svc.e.t">Environmental & planning support</h3>
+      <p data-i18n="svc.e.p">Technical input to licence applications, environmental assessments, B- and C-surveys and coastal zone planning — plus custom Python tools for your team.</p>
+      <ul><li>B/C</li><li>Forundersøkelse</li><li>Python</li></ul>
+    </article>
+  </div>
+</section>
+
+<section id="experience">
+  <div class="reveal"><div class="label" data-i18n="xp.label">Experience</div><h2 class="h2" data-i18n="xp.title">From the Arctic<br><em>to your fjord.</em></h2></div>
+  <div class="xp">
+    <div class="tl reveal">
+      <div class="tl-item"><div class="tl-date">09.2023 — <span data-i18n="xp.now">now</span></div><div class="tl-role" data-i18n="xp.1r">Oceanographer & Marine Consultant</div><div class="tl-org">Timoshina Ocean ENK · Stjørdal / Trondheim</div>
+        <ul><li data-i18n="xp.1a">Oceanographic analysis, QA and NS 9415 / NYTEK reporting (in collaboration with Sea Eco AS)</li><li data-i18n="xp.1b">Technical reports for licence applications, environmental assessments and coastal zone planning</li><li data-i18n="xp.1c">Conversion of current data to Fiskeridirektoratet's FD format; custom solutions for aquaculture and environment</li></ul></div>
+      <div class="tl-item"><div class="tl-date">03.2024 — 01.2025</div><div class="tl-role" data-i18n="xp.2r">Oceanographer / Researcher</div><div class="tl-org">UFES — Universidade Federal do Espírito Santo · Vitória, Brazil</div>
+        <ul><li data-i18n="xp.2a">Ocean temperature, thermohaline conditions and marine heatwaves</li><li data-i18n="xp.2b">Validation of HYCOM and Copernicus/Mercator/GLORYS against observations</li><li data-i18n="xp.2c">OSCAR oil-spill simulations and analysis</li></ul></div>
+      <div class="tl-item"><div class="tl-date">07.2018 — 10.2023</div><div class="tl-role" data-i18n="xp.3r">Oceanographer / Project Manager</div><div class="tl-org">Sea Eco AS · Harstad, Troms</div>
+        <ul><li data-i18n="xp.3a">Oceanographic projects for Norwegian aquaculture, from measurement strategy to report</li><li data-i18n="xp.3b">100+ successful current meter deployments; data processing, mapping and NS 9415 / NYTEK reporting</li><li data-i18n="xp.3c">NewDEPOMOD modelling; contributed to B- and C-surveys; Python tools; Olex and ArcGIS Pro</li></ul></div>
+      <div class="tl-item"><div class="tl-date">2015</div><div class="tl-role" data-i18n="xp.4r">Engineer in Oceanography</div><div class="tl-org">AARI — Arctic and Antarctic Research Institute · St. Petersburg</div>
+        <ul><li data-i18n="xp.4a">International NABOS expedition in the Arctic: CTD/rosette, ADCP, XBT, water sampling and data QC</li></ul></div>
+    </div>
+    <div class="side reveal">
+      <div class="glass block">
+        <h3 data-i18n="xp.tools">Toolbox</h3>
+        <div class="tool-row"><small data-i18n="xp.t1">Modelling & analysis</small><div class="langs"><span class="chip">Python</span><span class="chip">NewDEPOMOD</span><span class="chip">OSCAR</span><span class="chip">Delft3D FM</span><span class="chip">Copernicus / GLORYS</span><span class="chip">HYCOM</span></div></div>
+        <div class="tool-row"><small data-i18n="xp.t2">GIS & visualisation</small><div class="langs"><span class="chip">ArcGIS Pro</span><span class="chip">Olex</span><span class="chip">ODV</span><span class="chip">Google Earth</span></div></div>
+        <div class="tool-row"><small data-i18n="xp.t3">Instruments</small><div class="langs"><span class="chip">ADCP</span><span class="chip">Aquadopp</span><span class="chip">AquaPro</span><span class="chip">Signature 500</span><span class="chip">SeaGuard / RCM</span><span class="chip">CTD</span></div></div>
+        <div class="tool-row"><small data-i18n="xp.t4">Also</small><div class="langs"><span class="chip">Fortran</span><span class="chip">MATLAB</span></div></div>
+      </div>
+      <div class="glass block">
+        <h3 data-i18n="xp.edu">Education & courses</h3>
+        <div class="edu"><b>2015 — 2017</b><span data-i18n="xp.e1">MSc Applied Hydrometeorology / Physical Oceanography, RSHU — thesis: numerical model of how artificial seabed structures affect coastal hydrodynamics</span></div>
+        <div class="edu"><b>2011 — 2015</b><span data-i18n="xp.e2">BSc Applied Hydrometeorology / Physical Oceanography, RSHU — thesis: numerical modelling of coastal currents</span></div>
+        <div class="edu"><b>2024</b>Deltares — Delft3D FM Hydrodynamic & Ecological Modelling</div>
+        <div class="edu"><b>2024</b>SINTEF / UFES — OSCAR oil-spill modelling</div>
+        <div class="edu"><b>2022</b>NewDEPOMOD — <span data-i18n="xp.e3">particle transport, sedimentation and impact zones</span></div>
+        <div class="edu"><b>2015</b>TU Delft, Equinor — Data Assimilation in Oceanography (Braşov)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" style="padding-top:0">
+  <div class="reveal"><div class="label" data-i18n="pj.label">Selected work</div><h2 class="h2" data-i18n="pj.title">Projects that<br><em>made it to the surface.</em></h2></div>
+  <div class="proj">
+    <article class="glass reveal"><span class="kicker">NS 9415 · NYTEK</span><h3 data-i18n="pj.1t">Current studies for Norwegian aquaculture</h3><p data-i18n="pj.1p">Planning, QA/QC, analysis and reporting for Nordlaks, Salaks, Kleiva Fiskefarm, Gratanglaks, Mortenlaks and others.</p></article>
+    <article class="glass reveal"><span class="kicker">NewDEPOMOD</span><h3 data-i18n="pj.2t">Particle transport & sedimentation</h3><p data-i18n="pj.2p">Model setup, input quality control and analysis of sedimentation, transport and seabed impact.</p></article>
+    <article class="glass reveal"><span class="kicker">UFES · HYCOM · GLORYS</span><h3 data-i18n="pj.3t">Ocean model validation</h3><p data-i18n="pj.3p">Comparing HYCOM and Copernicus/Mercator/GLORYS against observation-based datasets.</p></article>
+    <article class="glass reveal"><span class="kicker">OSCAR</span><h3 data-i18n="pj.4t">Oil-spill modelling</h3><p data-i18n="pj.4p">Simulation and analysis of oil spills in a research project at UFES, Brazil.</p></article>
+  </div>
+</section>
+
+<section id="gallery" style="padding-top:0">
+  <div class="split-head reveal">
+    <div><div class="label" data-i18n="gl.label">Field log</div><h2 class="h2" data-i18n="gl.title">Life at<br><em>sea level.</em></h2></div>
+    <p class="lead" data-i18n="gl.lead">From Arctic sea ice to Norwegian fjords: the data in my reports starts out here, on deck.</p>
+  </div>
+  <div class="gal" id="gal"></div>
+</section>
+
+<section id="reach" style="padding-top:0">
+  <div class="reveal"><div class="label" data-i18n="rc.label">Reach & research</div><h2 class="h2" data-i18n="rc.title">Three oceans<br><em>of experience.</em></h2></div>
+  <div class="reach">
+    <div class="glass place reveal"><svg viewBox="0 0 100 100"><path d="M10 80 L30 30 L45 55 L60 20 L90 80Z" fill="none" stroke="#5ce0d8" stroke-width="3"/></svg><span class="coord">63.47°N 10.92°E</span><h3 data-i18n="rc.no">Norway</h3><p data-i18n="rc.nop">Home base. Aquaculture current studies, modelling and reporting from Troms to Trøndelag.</p></div>
+    <div class="glass place reveal"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="#5ce0d8" stroke-width="3"/><path d="M20 50h60M50 20v60" stroke="#5ce0d8" stroke-width="2"/></svg><span class="coord">20.32°S 40.34°W</span><h3 data-i18n="rc.br">Brazil</h3><p data-i18n="rc.brp">Research at UFES: marine heatwaves, model validation and oil-spill simulations.</p></div>
+    <div class="glass place reveal"><svg viewBox="0 0 100 100"><path d="M50 10 L58 42 L90 50 L58 58 L50 90 L42 58 L10 50 L42 42Z" fill="none" stroke="#5ce0d8" stroke-width="3"/></svg><span class="coord">78°N · ARCTIC</span><h3 data-i18n="rc.ar">Arctic</h3><p data-i18n="rc.arp">NABOS expedition with AARI and a study stay on Svalbard during the master's.</p></div>
+  </div>
+  <div class="pubs reveal">
+    <div class="pub"><b>2018</b><div><h4>Hydrodynamical model as tool for better management of aquaculture in North conditions</h4><small>Arctic Frontiers — Tromsø · <span data-i18n="rc.oral">Oral presentation</span></small></div></div>
+    <div class="pub"><b>2017</b><div><h4>Development of a model to study the effects of artificial biotope on biodiversity caused by changes in the hydrodynamic regime of waters</h4><small>3rd International Early Career Scientists Conference — Busan, Korea · <span data-i18n="rc.oral">Oral presentation</span></small></div></div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="reveal"><div class="label" data-i18n="ct.label">Contact</div><h2 class="h2" data-i18n="ct.title">Got data?<br><em>Let's surface it.</em></h2></div>
+  <div class="contact">
+    <div class="reveal">
+      <p class="lead" style="margin-top:0" data-i18n="ct.lead">Tell me what you have and what you need it for. Ask for my price list and I'll send it over, together with a suggested scope for your project.</p>
+      <div class="clinks">
+        <a class="clink" href="mailto:aletimoshina@gmail.com"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 7l10 7 10-7"/></svg><span><small data-i18n="ct.email">Email</small>aletimoshina@gmail.com</span></a>
+        <a class="clink" href="tel:+4791829898"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg><span><small data-i18n="ct.phone">Phone</small>+47 918 29 898</span></a>
+        <div class="clink"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C8 2 5 5 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg><span><small data-i18n="ct.based">Based in</small>Stjørdal, Trøndelag — <span data-i18n="ct.norway">Norway</span></span></div>
+        <a class="clink" href="https://www.linkedin.com/in/alena-timoshina-5387b7298/" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM9 9h3.8v1.7h.1c.5-1 1.8-2 3.8-2 4 0 4.8 2.6 4.8 6V21h-4v-5.6c0-1.3 0-3-1.9-3s-2.2 1.5-2.2 2.9V21H9z"/></svg><span><small>LinkedIn</small>Alena Timoshina</span></a>
+        <a class="clink" href="https://www.instagram.com/timoshina_ocean/" target="_blank" rel="noopener"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span><small>Instagram</small>@timoshina_ocean</span></a>
+      </div>
+    </div>
+    <form class="glass reveal" id="cform" novalidate>
+      <div class="f2">
+        <div class="f"><label for="fName" data-i18n="f.name">Name</label><input id="fName" required autocomplete="name"></div>
+        <div class="f"><label for="fCo" data-i18n="f.co">Company</label><input id="fCo" autocomplete="organization"></div>
+      </div>
+      <div class="f"><label for="fEmail" data-i18n="f.email">Email</label><input id="fEmail" type="email" required autocomplete="email"></div>
+      <div class="f"><label for="fProd" data-i18n="f.prod">What do you need?</label><select id="fProd"></select></div>
+      <div class="f"><label for="fMsg" data-i18n="f.msg">Message</label><textarea id="fMsg" data-i18n-ph="f.msgph" placeholder="Site, locality number, instrument, period, deadline…"></textarea></div>
+      <button class="btn btn-primary" type="submit" style="justify-content:center"><span data-i18n="f.send">Send request</span> →</button>
+      <p class="form-note" data-i18n="f.note">Opens your email app with everything filled in — nothing is stored on this site.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <span>© <span id="yr">2026</span> Timoshina Ocean ENK — <span data-i18n="ft.rights">all rights reserved</span> · Stjørdal, <span data-i18n="ct.norway">Norway</span></span>
+  <span data-i18n="ft.tag">Ocean data, surfaced.</span>
+</footer>
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Photo viewer" aria-hidden="true">
+  <button class="x" type="button" aria-label="Close">✕</button>
+  <button class="pv" type="button" aria-label="Previous">←</button>
+  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+  <button class="nx" type="button" aria-label="Next">→</button>
+</div>
+
+<script>
+/*! © Timoshina Ocean ENK — all rights reserved. No reuse without written permission. */
+!function(){"use strict";var e=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches,t=function(e,t){return(t||document).querySelector(e)},r=function(e,t){return Array.prototype.slice.call((t||document).querySelectorAll(e))},n={"nav.about":"Om meg","nav.products":"Produkter","nav.services":"Rådgivning","nav.xp":"Erfaring","nav.contact":"Kontakt","nav.cta":"Send dataene dine","hero.eyebrow":"Oseanograf · Stjørdal","hero.sub":"Jeg gjør rå strømdata, modeller og offentlige registre om til klare rapporter som oppfyller kravene for norsk havbruk — slik at neste beslutning bygger på hva vannet faktisk gjør.","hero.cta1":"Se produktene","hero.cta2":"Book en prat på 20 min","hero.dive":"Dykk ned","hc.years":"år med anvendt oseanografi","hc.deploy":"utsettinger av strømmålere","hc.std":"NYTEK-rapportering","hc.lang":"arbeidsspråk","about.badge1":"I felt siden 2015","about.badge2":"Arktis · Norge · Brasil","about.label":"Om meg","about.title":"Feltforstand.<br><em>Modellhjerne.</em>","about.p1":"Jeg er <strong>Alena Timoshina</strong>, oseanograf med mer enn 8 års erfaring innen anvendt oseanografi, akvakulturrådgivning, strømanalyse og miljømodellering i Norge og internasjonalt.","about.p2":"I Sea Eco AS planla og leverte jeg strømundersøkelser for norske oppdrettsanlegg fra målestrategi til ferdig rapport — <strong>over 100 vellykkede utsettinger av strømmålere</strong>, rapportering etter NS 9415 / NYTEK og modellering av partikkelspredning i <strong>NewDEPOMOD</strong>. Jeg tilrettelegger også strømdata i Fiskeridirektoratets <strong>FD-format</strong>.","about.p3":"Mastergraden min handlet om numerisk modellering av kysthydrodynamikk. Siden har jeg lagt til oljesølmodellering i OSCAR, opplæring i Delft3D FM og validering av HYCOM og Copernicus/GLORYS mot observasjoner ved UFES i Brasil. Gjennom <strong>Timoshina Ocean ENK</strong> kombinerer jeg dette med Python-automatisering for raske og konsistente leveranser.","stat.1":"års erfaring","stat.2":"instrumentutsettinger","stat.3":"land","stat.4":"språk","lang.no":"Norsk — profesjonelt arbeidsspråk, tekniske rapporter siden 2018","lang.en":"Engelsk — avansert","lang.pt":"Portugisisk — B2","lang.ru":"Russisk — morsmål","how.label":"Slik fungerer det","how.title":"Fra råfil<br>til <em>ferdig rapport.</em>","how.s1t":"Send dataene","how.s1p":"Rå instrumentfiler, CSV, modellresultater eller bare et lokalitetsnummer. Jeg bekrefter omfanget og kan sende deg prislisten min før vi starter.","how.s2t":"Jeg kontrollerer og analyserer","how.s2p":"Standardiserte Python-rutiner og en erfaren oseanografs blikk: spikes, tilt, hull, dyp og alt som ikke ser ut som ekte vann.","how.s3t":"Rapporten dukker opp","how.s3p":"En ryddig, konsistent PDF, figurpakke eller datasett — klar for søknaden, kunden eller driftslederen.","prod.label":"Produkthavna","prod.title":"Velg et produkt.<br><em>Se det stige opp.</em>","prod.lead":"Små leveranser med fast omfang for oppdrettere, konsulenter og kommuner. Trykk på et kort — rapporten stiger opp av bølgene og viser hva du får.","prod.preview":"FORHÅNDSVISNING · TIMOSHINA OCEAN","prod.ask":"Bestill →","prod.all":"Se alle 50 produkter","calc.label":"Gratis verktøy · Produkt 10","calc.title":"Hvor skal<br><em>strømmålerne</em> stå?","calc.net":"Notdyp (merd)","calc.sea":"Bunndyp på lokaliteten","calc.o1":"Vannutskiftning (±2 m)","calc.o2":"Dimensjonering (±3 m)","calc.o3":"Spredningsstrøm","calc.o4":"Bunnstrøm","calc.fine":"Kun veiledende: spredningsstrøm midt mellom merdbunnen og sjøbunnen (maks. 50 m under merdbunnen); bunnstrøm ca. 1 m over sjøbunnen, etter NS 9415:2021 og Fiskeridirektoratets veileder for forundersøkelse. Lokal topografi kan endre svaret — la meg se på lokaliteten din.","svc.label":"Rådgivning","svc.title":"Større spørsmål?<br><em>Hele prosjekter.</em>","svc.a.tag":"Kjerne","svc.a.t":"Strømmålinger og NS 9415-rapporter","svc.a.p":"Målestrategi, instrumentoppsett, QA/QC, analyse og rapportering av vannutskiftnings-, dimensjonerings-, sprednings- og bunnstrøm — inkludert konvertering til Fiskeridirektoratets FD-format.","svc.b.tag":"Modellering","svc.b.t":"NewDEPOMOD og partikkelspredning","svc.b.p":"Modelloppsett, kvalitetssikring av inngangsdata, sedimentasjon og påvirkningssoner, og validering mot målt strøm.","svc.c.tag":"Modellering","svc.c.t":"Hydrodynamikk og oljesøl","svc.c.p":"Delft3D FM (kurs hos Deltares) og OSCAR-simuleringer; validering av HYCOM og Copernicus/GLORYS.","svc.d.tag":"Kart","svc.d.t":"GIS og havkartlegging","svc.d.p":"Lokalitetskart, batymetri og figurer i ArcGIS Pro og Olex — laget for søknader og høringer.","svc.e.tag":"Miljø","svc.e.t":"Miljø- og planstøtte","svc.e.p":"Faglige bidrag til konsesjonssøknader, miljøvurderinger, B- og C-undersøkelser og kystsoneplanlegging — og egne Python-verktøy for teamet ditt.","xp.label":"Erfaring","xp.title":"Fra Arktis<br><em>til din fjord.</em>","xp.now":"nå","xp.1r":"Oseanograf og marin rådgiver","xp.1a":"Oseanografisk analyse, kvalitetssikring og rapportering etter NS 9415 / NYTEK (i samarbeid med Sea Eco AS)","xp.1b":"Tekniske rapporter for konsesjonssøknader, miljøvurderinger og kystsoneplanlegging","xp.1c":"Konvertering av strømdata til Fiskeridirektoratets FD-format; skreddersydde løsninger for havbruk og miljø","xp.2r":"Oseanograf / forsker","xp.2a":"Havtemperatur, termohaline forhold og marine hetebølger","xp.2b":"Validering av HYCOM og Copernicus/Mercator/GLORYS mot observasjoner","xp.2c":"Simulering og analyse av oljesøl med OSCAR","xp.3r":"Oseanograf / prosjektleder","xp.3a":"Oseanografiske prosjekter for norsk havbruk, fra målestrategi til rapport","xp.3b":"Over 100 vellykkede utsettinger av strømmålere; databehandling, kart og rapportering etter NS 9415 / NYTEK","xp.3c":"Modellering i NewDEPOMOD; bidro i B- og C-undersøkelser; Python-verktøy; Olex og ArcGIS Pro","xp.4r":"Ingeniør i oseanografi","xp.4a":"Internasjonal NABOS-ekspedisjon i Arktis: CTD/rosett, ADCP, XBT, vannprøver og datakontroll","xp.tools":"Verktøykasse","xp.t1":"Modellering og analyse","xp.t2":"GIS og visualisering","xp.t3":"Instrumenter","xp.t4":"Også","xp.edu":"Utdanning og kurs","xp.e1":"Master i anvendt hydrometeorologi / fysisk oseanografi, RSHU — oppgave: numerisk modell for kunstige bunnstrukturers påvirkning på kysthydrodynamikken","xp.e2":"Bachelor i anvendt hydrometeorologi / fysisk oseanografi, RSHU — oppgave: numerisk modellering av havstrømmer i kystområder","xp.e3":"partikkeltransport, sedimentasjon og påvirkningssoner","pj.label":"Utvalgte prosjekter","pj.title":"Prosjekter som<br><em>har nådd overflaten.</em>","pj.1t":"Strømundersøkelser for norsk havbruk","pj.1p":"Planlegging, QA/QC, analyse og rapportering for Nordlaks, Salaks, Kleiva Fiskefarm, Gratanglaks, Mortenlaks m.fl.","pj.2t":"Partikkeltransport og sedimentasjon","pj.2p":"Modelloppsett, kvalitetssikring av inngangsdata og analyse av sedimentasjon, spredning og bunnpåvirkning.","pj.3t":"Validering av havmodeller","pj.3p":"Sammenligning av HYCOM og Copernicus/Mercator/GLORYS mot observasjonsbaserte datasett.","pj.4t":"Oljesølmodellering","pj.4p":"Simulering og analyse av oljesøl i et forskningsprosjekt ved UFES i Brasil.","rc.label":"Rekkevidde og forskning","rc.title":"Tre havområder<br><em>med erfaring.</em>","rc.no":"Norge","rc.nop":"Hjemmebase. Strømundersøkelser, modellering og rapportering for havbruk fra Troms til Trøndelag.","rc.br":"Brasil","rc.brp":"Forskning ved UFES: marine hetebølger, modellvalidering og oljesølsimuleringer.","rc.ar":"Arktis","rc.arp":"NABOS-ekspedisjonen med AARI og studieopphold på Svalbard under masteren.","rc.oral":"Muntlig presentasjon","ct.label":"Kontakt","ct.title":"Har du data?<br><em>La oss løfte dem frem.</em>","ct.lead":"Fortell hva du har og hva det skal brukes til. Be om prislisten min, så sender jeg den sammen med et forslag til omfang for prosjektet ditt.","ct.email":"E-post","ct.phone":"Telefon","ct.based":"Holder til i","ct.norway":"Norge","f.name":"Navn","f.co":"Firma","f.email":"E-post","f.prod":"Hva trenger du?","f.msg":"Melding","f.msgph":"Lokalitet, lokalitetsnummer, instrument, periode, frist…","f.send":"Send forespørsel","f.note":"Åpner e-postprogrammet ditt med alt ferdig utfylt — ingenting lagres på denne siden.","ft.tag":"Havdata, løftet til overflaten.","ft.rights":"alle rettigheter forbeholdt","nav.gallery":"Feltlogg","gl.label":"Feltlogg","gl.title":"Livet på<br><em>havnivå.</em>","gl.lead":"Fra arktisk sjøis til norske fjorder: dataene i rapportene mine starter her, på dekk."},a={en:{title:["Ocean data,","<em>surfaced.</em>"],all:"All",cats:{cur:"Currents",mod:"Modelling",map:"Maps & site data",reg:"Regulatory",env:"Fish health & environment",pub:"Public & municipal"},cust:{F:"Farms",C:"Consultants",K:"Municipalities",P:"Public",I:"Investors & suppliers",V:"Veterinarians",A:"Aquaculture companies",M:"Farm managers",S:"Schools"},forw:"For",star:"Popular",other:"Custom consulting project",opt1:"Current measurements / NS 9415 report",opt2:"NewDEPOMOD / particle transport",opt3:"Hydrodynamic or oil-spill modelling",opt4:"GIS & maps",screen:"Screening — not a regulatory dispersion model.",std:"Price list available on request",subject:"Request",hello:"Hi Alena,",need:"I am interested in",hint:"Please add your name and email.",deep:"Depth"},no:{title:["Havdata,","<em>til overflaten.</em>"],all:"Alle",cats:{cur:"Strøm",mod:"Modellering",map:"Kart og lokalitetsdata",reg:"Regelverk",env:"Fiskehelse og miljø",pub:"Offentlig og kommune"},cust:{F:"Oppdrettere",C:"Konsulenter",K:"Kommuner",P:"Publikum",I:"Investorer og leverandører",V:"Veterinærer",A:"Havbruksselskaper",M:"Driftsledere",S:"Skoler"},forw:"For",star:"Populær",other:"Skreddersydd rådgivningsprosjekt",opt1:"Strømmålinger / NS 9415-rapport",opt2:"NewDEPOMOD / partikkelspredning",opt3:"Hydrodynamisk modellering eller oljesøl",opt4:"GIS og kart",screen:"Screening — ikke en regulatorisk spredningsmodell.",std:"Prisliste sendes på forespørsel",subject:"Forespørsel",hello:"Hei Alena,",need:"Jeg er interessert i",hint:"Fyll inn navn og e-post.",deep:"Dyp"}},o=[[1,1,"cur","FC","series","Current Data QuickCheck","Strømdata-hurtigsjekk","Upload raw current data and get a 2-page PDF: completeness, gaps, obvious spikes, depth/pressure and basic statistics.","Last opp rå strømdata og få en 2-siders PDF: datadekning, hull, tydelige spikes, dyp/trykk og enkel statistikk."],[2,1,"cur","C","doc","Current QA/QC Memo","QA/QC-notat for strømdata","A standard technical memo documenting removed spikes, tilt/SNR issues, rig disturbance events and the final usable period.","Standardisert teknisk notat som dokumenterer fjernede spikes, tilt/SNR-avvik, hendelser der riggen er flyttet og endelig brukbar periode."],[3,1,"cur","FC","rose","Current Rose Pack","Strømrosepakke","Professionally formatted current roses and directional statistics from your supplied data.","Profesjonelt formaterte strømroser og retningsstatistikk basert på dine data."],[4,0,"cur","FC","bars","Depth Comparison Pack","Dypsammenligning","Compare 5 m, 15 m, spreading and bottom current in one standard visual report.","Sammenlign 5 m, 15 m, sprednings- og bunnstrøm i én standardisert visuell rapport."],[5,1,"cur","FC","series2","Season-to-Season Comparison","Sesongsammenligning","Compare two campaigns or years side by side — without awkward multi-year time-series gaps.","Sammenlign to kampanjer eller år side om side — uten klønete hull i flerårige tidsserier."],[6,0,"cur","F","event","High-Current Event Card","Kort: sterkstrømshendelser","Number, duration and direction of events above chosen thresholds such as 20/30/40 cm/s.","Antall, varighet og retning for hendelser over valgte terskler, f.eks. 20/30/40 cm/s."],[7,0,"cur","F","event","Low-Current / Stagnation Card","Kort: svak strøm og stagnasjon","Share of time below selected speeds, duration of weak-current periods and directional context.","Andel tid under valgte hastigheter, varighet av svakstrømsperioder og retningskontekst."],[8,1,"cur","C","dash","Instrument Health Check","Instrumentsjekk","Pressure, tilt, signal quality and data-return summary — before anyone spends hours analysing bad data.","Oppsummering av trykk, tilt, signalkvalitet og datadekning — før noen bruker timer på å analysere dårlige data."],[9,0,"reg","FC","check","Campaign Readiness Check","Klar-for-måling-sjekk","One-page pre-deployment review: depths, instrument setup, duration, sampling and documentation checklist.","Én sides gjennomgang før utsetting: dyp, instrumentoppsett, varighet, sampling og dokumentasjon."],[10,1,"cur","CF","depth","Measurement Depth Calculator","Kalkulator for måledyp","Enter net depth and seabed depth to get suggested water-exchange, spreading and bottom-current depths. Try the free version below.","Oppgi notdyp og bunndyp og få foreslåtte dyp for vannutskiftnings-, sprednings- og bunnstrøm. Prøv gratisversjonen under."],[11,0,"map","C","map","Measurement Position Screening Map","Screeningkart for måleposisjon","Bathymetry, coastline and current context suggesting where a representative measurement point should be investigated.","Batymetri, kystlinje og strømkontekst som viser hvor et representativt målepunkt bør vurderes."],[12,0,"cur","C","bars","Current Report Figure Pack","Figurpakke for strømrapport","Send a CSV, get every standard figure ready to insert into your own report.","Send en CSV og få alle standardfigurer klare til å lime inn i din egen rapport."],[13,1,"cur","C","series","Raw → Clean Data Pack","Rådata → rene data","Standardised cleaned CSV with a change log and plots — the same quality every time.","Standardisert, renset CSV med endringslogg og plott — samme kvalitet hver gang."],[14,0,"reg","C","check","Original-Data Completeness Check","Kontroll av originaldata","Are files, metadata, coordinates, periods and documentation complete before submission?","Er filer, metadata, koordinater, perioder og dokumentasjon komplett før innsending?"],[15,1,"cur","M","rose","One-Page Site Current Summary","Strømoppsummering på én side","One visual A4: dominant direction, mean/max current, weak-current share and the main operational message.","Én visuell A4: dominerende retning, middel-/maksstrøm, andel svak strøm og hovedbudskapet for driften."],[16,1,"mod","FC","particles","Particle-Transport Screen","Screening av partikkelspredning","A clearly labelled screening of how sinking velocity and measured currents could change deposition distance.","En tydelig merket screening av hvordan synkehastighet og målt strøm kan endre avsetningsavstand."],[17,0,"mod","F","particles","Waste-Transport Scenario Pack","Scenariopakke for avfallsspredning","Fast-, medium- and slow-sinking particle scenarios with simple maps and graphics.","Scenarier for raskt, middels og sakte synkende partikler med enkle kart og grafikk."],[18,1,"mod","C","check","DEPOMOD Input Check","Kontroll av DEPOMOD-input","Input files, coordinates, production data, bathymetry and current inputs checked for inconsistencies before modelling.","Kontroll av inputfiler, koordinater, produksjonsdata, batymetri og strømdata for avvik før modellering."],[19,0,"mod","C","map","Model Results Visualisation Pack","Visualisering av modellresultater","You provide model output; I create maps, legends, sections and summary figures.","Du leverer modellresultater; jeg lager kart, tegnforklaringer, snitt og oppsummeringsfigurer."],[20,0,"mod","C","series2","Model-vs-Measurement Comparison","Modell mot måling","A short validation graphic: observed versus modelled current speed and direction.","Kort valideringsgrafikk: observert mot modellert strømhastighet og -retning."],[21,1,"map","C","map","10 km + 1.5 km Map Pack","Kartpakke 10 km + 1,5 km","A standard map package around a proposed site at the scales the forundersøkelse guide asks for.","Standard kartpakke rundt en planlagt lokalitet i målestokkene veilederen for forundersøkelse etterspør."],[22,1,"map","FC","map","Site Context Map","Kontekstkart for lokalitet","Your site plus nearby farms, rivers, protected areas, major seabed features and boundaries.","Lokaliteten med nærliggende anlegg, elver, verneområder, viktige bunnformer og administrative grenser."],[23,0,"map","FK","map","Nearby Aquaculture Map","Kart over nærliggende anlegg","Map and table of registered localities within a chosen radius, from official Akvakulturregisteret data.","Kart og tabell over registrerte lokaliteter innen valgt radius, fra Akvakulturregisteret."],[24,0,"map","KC","bars","Aquaculture Density Card","Tetthetskort for havbruk","Number, type and operator of sites in a municipality, fjord or radius.","Antall, type og operatør for lokaliteter i en kommune, fjord eller radius."],[25,1,"map","FC","doc","Site Dossier","Lokalitetsdossier","Enter a locality number and get a 5–8 page snapshot of public information about the site and its surroundings.","Oppgi lokalitetsnummer og få et 5–8 siders øyeblikksbilde av offentlig informasjon om lokaliteten og omgivelsene."],[26,0,"map","A","map","Company Portfolio Map","Porteføljekart","All your sites on one professional map with locality IDs, production type and region.","Alle selskapets lokaliteter på ett kart med lokalitets-ID, produksjonstype og region."],[27,0,"map","F","map","Neighbour Site Map","Kart over naboanlegg","Public-data overview of surrounding registered localities and owners.","Oversikt over omkringliggende registrerte lokaliteter og eiere fra offentlige data."],[28,1,"map","CFK","dash","Akvakulturregister Change Alert","Endringsvarsel fra Akvakulturregisteret","A monthly list and map of new, removed or changed localities in the municipalities you follow.","Månedlig liste og kart over nye, fjernede eller endrede lokaliteter i kommunene du følger."],[29,0,"reg","CK","bars","Application Activity Brief","Oversikt over søknadsaktivitet","Monthly summary of new and pending aquaculture applications in a chosen area.","Månedlig oppsummering av nye og pågående akvakultursøknader i et valgt område."],[30,0,"reg","F","check","New-Site Pre-Screen","Forhåndsscreening av ny lokalitet","A desktop screen of obvious geographic and environmental issues before you commission expensive surveys. Screening, not approval.","Skrivebordsscreening av tydelige geografiske og miljømessige forhold før dyre undersøkelser bestilles. Screening, ikke godkjenning."],[31,1,"reg","CF","check","Forundersøkelse Gap Check","Mangelsjekk for forundersøkelse","Send what you have; get a matrix of what appears present or missing against Fiskeridirektoratet's current guide.","Send det du har; få en matrise over hva som ser ut til å finnes eller mangle etter Fiskeridirektoratets gjeldende veileder."],[32,0,"reg","C","doc","Forundersøkelse Executive Summary","Sammendrag av forundersøkelse","Several technical sub-reports turned into one consistent 2–3 page factual summary.","Flere tekniske delrapporter samlet i ett konsistent, faktabasert sammendrag på 2–3 sider."],[33,0,"map","C","map","Station Placement Figure Pack","Figurpakke for stasjonsplassering","Clean maps of proposed B, C, current, hydrography and reference stations from your coordinates.","Ryddige kart over planlagte B-, C-, strøm-, hydrografi- og referansestasjoner basert på dine koordinater."],[34,0,"reg","CF","check","Hard-Bottom Screening Sheet","Screening av hard bunn","Does hard or mixed bottom need extra attention — and which questions need resolving?","Trenger hard eller blandet bunn ekstra oppmerksomhet — og hvilke spørsmål må avklares?"],[35,0,"env","F","dash","Environmental Monitoring Calendar","Kalender for miljøovervåking","A site-by-site annual dashboard of planned B, C and other surveys and their due dates.","Årlig oversikt per lokalitet over planlagte B-, C- og andre undersøkelser med frister."],[36,0,"env","FC","series2","B/C Results Trend Dashboard","Trendoversikt for B/C-resultater","Several years of survey results in one visual trend product.","Flere års undersøkelsesresultater i ett visuelt trendprodukt."],[37,0,"env","FC","bars","Cu/Zn Trend Card","Trendkort for Cu/Zn","Standard visualisation of copper and zinc sediment results across time and stations.","Standard visualisering av kobber- og sinkresultater i sediment over tid og stasjoner."],[38,0,"env","C","profile","Hydrography QuickLook","Hydrografi-hurtigblikk","CTD profiles turned into oxygen, temperature, salinity and density plots with a short summary.","CTD-profiler gjort om til plott av oksygen, temperatur, saltholdighet og tetthet med kort oppsummering."],[39,0,"env","FK","profile","Deep-Water Oxygen Watch","Oksygenvakt for dypvann","Repeated seasonal oxygen and hydrography plots at selected fjord stations.","Gjentatte sesongplott av oksygen og hydrografi på utvalgte fjordstasjoner."],[40,1,"reg","F","check","Driftsplan Preparation Checklist","Sjekkliste for driftsplan","An annual product that organises locations, fallowing, movements and supporting information before submission.","Årlig produkt som organiserer lokaliteter, brakklegging, flyttinger og underlagsinformasjon før innsending."],[41,0,"env","FV","map","Biosecurity Geography Map","Kart for smittevern","Surrounding farms, rivers, routes and distances for internal biosecurity planning.","Omkringliggende anlegg, elver, ferdselsårer og avstander for intern smittevernplanlegging."],[42,1,"env","FC","dash","Weekly Local Fish-Health Snapshot","Ukentlig fiskehelsebilde","Public lice and disease indicators around your region, summarised from BarentsWatch and official sources.","Offentlige lus- og sykdomsindikatorer rundt din region, oppsummert fra BarentsWatch og offisielle kilder."],[43,0,"pub","K","doc","Municipality Aquaculture Snapshot","Havbruksoversikt for kommunen","A neutral 5-page overview: sites, operators, species, applications, protected areas and key water bodies.","Nøytral 5-siders oversikt: lokaliteter, aktører, arter, søknader, verneområder og viktige vannforekomster."],[44,1,"env","KC","doc","Waterbody Status Card","Tilstandskort for vannforekomst","A one-page, plain-language summary of a coastal water body's official status and monitoring data.","Én side i klarspråk om en kystvannforekomsts offisielle tilstand og overvåkingsdata."],[45,0,"pub","KC","map","Public Consultation Map Pack","Kartpakke for høring","Easy-to-read maps for hearings and public meetings.","Lettleste kart til høringer og folkemøter."],[46,0,"pub","KP","doc","“Explain This Application” Brief","«Forklar søknaden»","A neutral 2–3 page explanation of what an application proposes and which environmental questions are assessed.","Nøytral forklaring på 2–3 sider om hva en søknad gjelder og hvilke miljøspørsmål som vurderes."],[47,1,"pub","CI","bars","Monthly Trøndelag Aquaculture Brief","Månedlig havbruksbrief for Trøndelag","4–6 slides: applications, registered sites, public statistics, regulatory changes and interesting regional data.","4–6 lysbilder: søknader, registrerte lokaliteter, offentlig statistikk, regelverksendringer og interessante regionale data."],[48,0,"pub","PS","map","“Know Your Fjord” Report","«Kjenn fjorden din»","Pick a fjord and get an attractive PDF on depth, currents, rivers, aquaculture and protected areas.","Velg en fjord og få en flott PDF om dyp, strøm, elver, havbruk og verneområder."],[49,0,"pub","P","map","Personalised Fjord Map Poster","Personlig fjordplakat","A beautiful scientific map of your local fjord — for the cabin wall or as a gift.","Et vakkert vitenskapelig kart over din fjord — til hytteveggen eller som gave."],[50,1,"pub","FKP","dash","Ocean Data Explained","Havdata forklart","Monthly subscription: one local dataset turned into one clear infographic and a short explanation.","Månedlig abonnement: ett lokalt datasett gjort om til én tydelig infografikk med kort forklaring."]].map(function(e){return{n:e[0],star:!!e[1],cat:e[2],cust:e[3],viz:e[4],name:{en:e[5],no:e[6]},desc:{en:e[7],no:e[8]}}}),i=o.filter(function(e){return e.star});function s(e){return function(){return((e=16807*e%2147483647)-1)/2147483646}}var l="#0d8f8a",d="#1ec5c0",c="#0a1628",g="#ff8a6b";function p(e){return'<svg viewBox="0 0 300 130" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">'+e+"</svg>"}var u={series:function(e){for(var t=70,r="",n="",a="M",o=10;o<=290;o+=4)t+=14*(e()-.5),t=Math.max(25,Math.min(110,t)),o>150&&o<175?a="M":(n+=a+o+" "+t.toFixed(1)+" ",a="L",e()>.94&&(r+='<circle cx="'+o+'" cy="'+(t-22)+'" r="3" fill="'+g+'"/>'));return p('<rect x="150" y="12" width="25" height="108" fill="'+g+'" opacity=".12"/><text x="162" y="22" font-size="8" fill="'+g+'" text-anchor="middle" font-family="sans-serif">gap</text><path d="M10 120H290M10 12V120" stroke="#bcd5da"/><path d="'+n+'" fill="none" stroke="'+l+'" stroke-width="1.6"/>'+r)},series2:function(e){for(var t="",r="",n=60,a=80,o=10;o<=290;o+=5)n+=12*(e()-.5),a+=12*(e()-.5),n=Math.max(20,Math.min(110,n)),a=Math.max(20,Math.min(110,a)),t+=(10===o?"M":"L")+o+" "+n.toFixed(1)+" ",r+=(10===o?"M":"L")+o+" "+a.toFixed(1)+" ";return p('<path d="M10 120H290M10 12V120" stroke="#bcd5da"/><path d="'+t+'" fill="none" stroke="'+l+'" stroke-width="1.6"/><path d="'+r+'" fill="none" stroke="'+g+'" stroke-width="1.6" stroke-dasharray="4 3"/><rect x="200" y="14" width="10" height="3" fill="'+l+'"/><text x="214" y="18" font-size="8" font-family="sans-serif" fill="'+c+'">A</text><rect x="230" y="14" width="10" height="3" fill="'+g+'"/><text x="244" y="18" font-size="8" font-family="sans-serif" fill="'+c+'">B</text>')},rose:function(e){for(var t="",r=100,n=1;n<=3;n++)t+='<circle cx="100" cy="65" r="'+18*n+'" fill="none" stroke="#cfe3e6"/>';for(var a=0;a<16;a++){var o=a/16*Math.PI*2-Math.PI/2,i=Math.PI/16*.8,s=12+44*Math.pow(e(),1.6)+(3===a||11===a?20:0);s=Math.min(s,56);var g=[r+Math.cos(o-i)*s,65+Math.sin(o-i)*s],u=[r+Math.cos(o+i)*s,65+Math.sin(o+i)*s];t+='<path d="M100 65L'+g[0].toFixed(1)+" "+g[1].toFixed(1)+"A"+s+" "+s+" 0 0 1 "+u[0].toFixed(1)+" "+u[1].toFixed(1)+'Z" fill="'+(s>40?l:d)+'" opacity=".85"/>'}return t+='<text x="100" y="8" font-size="8" text-anchor="middle" font-family="sans-serif" fill="'+c+'">N</text>',p(t+='<g font-family="sans-serif" font-size="9" fill="'+c+'"><text x="185" y="40">Mean  8.4 cm/s</text><text x="185" y="58">Max   41 cm/s</text><text x="185" y="76">Dir   ENE</text><text x="185" y="94">&lt;3 cm/s  12 %</text></g>')},bars:function(e){for(var t='<path d="M20 118H290" stroke="#bcd5da"/>',r=["5m","15m","Spr","Bot"],n=0;n<4;n++){for(var a=0;a<2;a++){var o=20+80*e();t+='<rect x="'+(34+66*n+18*a)+'" y="'+(118-o)+'" width="15" height="'+o+'" rx="2" fill="'+(a?d:l)+'"/>'}t+='<text x="'+(50+66*n)+'" y="128" font-size="8" text-anchor="middle" font-family="sans-serif" fill="'+c+'">'+r[n]+"</text>"}return p(t)},event:function(e){for(var t="",r=80,n="",a=10;a<=290;a+=3)r+=16*(e()-.5),t+=(10===a?"M":"L")+a+" "+(r=Math.max(15,Math.min(118,r))).toFixed(1)+" ",r<50&&(n+='<rect x="'+(a-1.5)+'" y="12" width="3" height="106" fill="'+g+'" opacity=".18"/>');return p(n+'<path d="M10 50H290" stroke="'+g+'" stroke-dasharray="4 3"/><text x="288" y="46" font-size="8" text-anchor="end" font-family="sans-serif" fill="'+g+'">30 cm/s</text><path d="'+t+'" fill="none" stroke="'+l+'" stroke-width="1.5"/>')},dash:function(e){for(var t="",r=0;r<6;r++){var n=10+r%3*96,a=8+60*Math.floor(r/3);t+='<rect x="'+n+'" y="'+a+'" width="88" height="52" rx="6" fill="#fff" stroke="#d7ebee"/>',t+='<circle cx="'+(n+10)+'" cy="'+(a+11)+'" r="4" fill="'+(e()>.25?d:g)+'"/><rect x="'+(n+18)+'" y="'+(a+8)+'" width="'+(30+30*e())+'" height="5" rx="2" fill="#c8dde2"/>';for(var o="M"+(n+8)+" "+(a+40),i=1;i<=8;i++)o+=" L"+(n+8+9*i)+" "+(a+26+20*e()).toFixed(1);t+='<path d="'+o+'" fill="none" stroke="'+l+'" stroke-width="1.4"/>'}return p(t)},check:function(e){for(var t="",r=["Coordinates","Bathymetry","Current data","Production","Metadata"],n=0;n<5;n++){var a=14+22*n,o=2!==n&&4!==n||e()>.6;t+='<rect x="20" y="'+a+'" width="14" height="14" rx="3" fill="'+(o?d:"#fff")+'" stroke="'+(o?d:g)+'"/>'+(o?'<path d="M23 '+(a+7)+'l3 3 6-6" stroke="#fff" stroke-width="2" fill="none"/>':'<path d="M24 '+(a+4)+"l6 6M30 "+(a+4)+'l-6 6" stroke="'+g+'" stroke-width="2"/>')+'<text x="44" y="'+(a+11)+'" font-size="10" font-family="sans-serif" fill="'+c+'">'+r[n]+'</text><rect x="150" y="'+(a+4)+'" width="'+(60+70*e())+'" height="6" rx="3" fill="#d7ebee"/>'}return p(t)},map:function(e){for(var t='<rect width="300" height="130" fill="#e3f3f5"/>',r=0;r<5;r++){for(var n="M0 "+(20+22*r),a=0;a<=300;a+=20)n+=" Q"+(a+10)+" "+(20+22*r+24*(e()-.5)).toFixed(1)+" "+(a+20)+" "+(20+22*r+10*(e()-.5)).toFixed(1);t+='<path d="'+n+'" fill="none" stroke="#9cc9d0" stroke-width="'+(r?.8:1.2)+'"/>'}t+='<path d="M0 0H300V18Q260 30 220 16T140 22T60 12T0 26Z" fill="#cfd8c4"/><path d="M230 130Q240 100 270 96T300 70V130Z" fill="#cfd8c4"/>',t+='<circle cx="150" cy="70" r="46" fill="none" stroke="'+l+'" stroke-dasharray="3 3"/><circle cx="150" cy="70" r="18" fill="'+d+'" opacity=".15" stroke="'+l+'"/>';for(var o=0;o<5;o++)t+='<path d="M'+(40+220*e())+" "+(30+80*e())+'l4 -8 4 8z" fill="'+g+'"/>';return p(t+='<rect x="144" y="64" width="12" height="12" fill="'+c+'"/><path d="M270 20l6 -12 6 12-6-4z" fill="'+c+'"/><path d="M20 118h40" stroke="'+c+'" stroke-width="2"/><text x="20" y="114" font-size="7" font-family="sans-serif" fill="'+c+'">1.5 km</text>')},particles:function(e){for(var t='<rect width="300" height="130" fill="#eef8f9"/>',r=[l,d,g],n=[40,80,130],a=2;a>=0;a--){t+='<ellipse cx="'+(60+n[a]/2)+'" cy="70" rx="'+n[a]/2+'" ry="'+(14+8*a)+'" fill="'+r[a]+'" opacity=".12"/>';for(var o=0;o<26;o++){var i=e();t+='<circle cx="'+(60+i*n[a]).toFixed(1)+'" cy="'+(70+(e()-.5)*(14+14*a)*i*1.6).toFixed(1)+'" r="1.8" fill="'+r[a]+'"/>'}}return p(t+='<circle cx="60" cy="70" r="10" fill="none" stroke="'+c+'" stroke-width="2"/><path d="M200 20h40" stroke="'+c+'" marker-end="url(#ar)"/><defs><marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0L6 3 0 6z" fill="'+c+'"/></marker></defs><text x="200" y="14" font-size="8" font-family="sans-serif" fill="'+c+'">current</text>')},doc:function(e){for(var t="",r=0;r<3;r++){var n=20+92*r;t+='<rect x="'+n+'" y="'+(10+3*r)+'" width="78" height="110" rx="4" fill="#fff" stroke="#d7ebee"/><rect x="'+n+'" y="'+(10+3*r)+'" width="78" height="16" rx="4" fill="'+(r?d:c)+'"/>';for(var a=0;a<7;a++)t+='<rect x="'+(n+8)+'" y="'+(34+3*r+10*a)+'" width="'+(30+36*e())+'" height="4" rx="2" fill="#cfe0e4"/>';1===r&&(t+='<rect x="'+(n+8)+'" y="94" width="62" height="20" rx="3" fill="'+l+'" opacity=".25"/>')}return p(t)},profile:function(e){for(var t='<path d="M20 10V122M20 10H290" stroke="#bcd5da"/>',r=[l,g,"#3a6ea5"],n=0;n<3;n++){for(var a="M"+(60+70*n)+" 12",o=60+70*n,i=12;i<=120;i+=6)a+=" L"+(o+=8*(e()-.45)-(i>40&&i<60?n?-3:4:0)).toFixed(1)+" "+i;t+='<path d="'+a+'" fill="none" stroke="'+r[n]+'" stroke-width="1.8"/>'}return p(t+'<text x="14" y="126" font-size="7" font-family="sans-serif" fill="'+c+'" text-anchor="end">m</text>')},depth:function(){return p('<rect x="0" y="16" width="300" height="114" fill="#dff1f4"/><path d="M0 16Q40 10 80 16T160 16T240 16T300 16" stroke="'+d+'" fill="none" stroke-width="2"/><rect x="40" y="16" width="70" height="40" fill="none" stroke="'+c+'" stroke-dasharray="3 2"/><path d="M40 56L75 70 110 56" fill="none" stroke="'+c+'" stroke-dasharray="3 2"/><path d="M0 122Q80 112 150 120T300 116V130H0Z" fill="#c9b99a"/><g font-family="sans-serif" font-size="9" fill="'+c+'"><circle cx="170" cy="24" r="4" fill="'+l+'"/><text x="180" y="27">5 m</text><circle cx="170" cy="40" r="4" fill="'+l+'"/><text x="180" y="43">15 m</text><circle cx="170" cy="88" r="4" fill="'+g+'"/><text x="180" y="91">Spreading</text><circle cx="170" cy="113" r="4" fill="'+c+'"/><text x="180" y="116">Bottom</text></g>')}};function m(e){return u[e.viz](s(977*e.n+13))}var f="en";try{var h=localStorage.getItem("to-lang");h?f=h:/^(nb|nn|no)/i.test(navigator.language||"")&&(f="no")}catch(e){}function k(e){f=e,document.documentElement.lang="no"===e?"nb":"en";try{localStorage.setItem("to-lang",e)}catch(e){}var s,l,d,c,g,p,u;r(".lang button").forEach(function(t){t.classList.toggle("on",t.dataset.lang===e)}),r("[data-i18n]").forEach(function(t){var r=t.dataset.i18n;t.innerHTML="no"===e&&n[r]?n[r]:t.dataset.en}),r("[data-i18n-ph]").forEach(function(t){var r=t.dataset.i18nPh;t.setAttribute("placeholder","no"===e&&n[r]?n[r]:t.dataset.enph)}),function(){var e=a[f].title,r=t("#heroTitle"),n="";e.forEach(function(t,r){n+='<span class="w"><span style="animation-delay:'+(.15+.18*r)+'s">'+t+"</span></span>"+(r<e.length-1?"<br>":"")}),r.innerHTML=n;var o=r.querySelector("em");o&&(o.style.animationDelay=.15+.18+"s, 0s")}(),M(),(s=t("#pgrid")).innerHTML=i.map(function(e){return'<button type="button" class="pcard'+(y&&y.n===e.n?" on":"")+'" data-n="'+e.n+'"><span class="pn">#'+String(e.n).padStart(2,"0")+'<span class="tag">'+a[f].cats[e.cat]+'</span></span><span class="pt">'+e.name[f]+'</span><span class="pc">'+x(e)+'</span><span class="pd">'+e.desc[f]+"</span></button>"}).join(""),r(".pcard",s).forEach(function(e){e.addEventListener("click",function(){b=!0,O(o[e.dataset.n-1]),window.innerWidth<1080&&t("#surface").scrollIntoView({behavior:"smooth",block:"center"})}),e.addEventListener("pointermove",function(t){var r=e.getBoundingClientRect();e.style.setProperty("--mx",t.clientX-r.left+"px"),e.style.setProperty("--my",t.clientY-r.top+"px")})}),S(),l=["cur","mod","map","reg","env","pub"],t("#allgrid").innerHTML=l.map(function(e){return'<div class="allgroup"><h4>'+a[f].cats[e]+"</h4>"+o.filter(function(t){return t.cat===e}).map(function(e){return'<button type="button" class="allrow" data-n="'+e.n+'"><b>'+String(e.n).padStart(2,"0")+"</b><span>"+e.name[f]+(e.star?' <span class="tag">★</span>':"")+"<small>"+x(e)+"</small></span></button>"}).join("")+"</div>"}).join(""),r(".allrow").forEach(function(e){e.addEventListener("click",function(){b=!0,O(o[e.dataset.n-1]),t("#surface").scrollIntoView({behavior:"smooth",block:"center"})})}),d=t("#fProd"),c=d.value,g=a[f],p='<optgroup label="'+("no"===f?"Rådgivning":"Consulting")+'"><option value="c1">'+g.opt1+'</option><option value="c2">'+g.opt2+'</option><option value="c3">'+g.opt3+'</option><option value="c4">'+g.opt4+'</option><option value="c0">'+g.other+"</option></optgroup>",p+='<optgroup label="'+("no"===f?"Produkter":"Products")+'">'+o.map(function(e){return'<option value="p'+e.n+'">#'+e.n+" "+e.name[f]+"</option>"}).join("")+"</optgroup>",d.innerHTML=p,c&&(d.value=c),t("#gal").innerHTML=re.map(function(e,t){return'<button type="button" class="gi reveal in" data-i="'+t+'"><img src="'+oe(e[0])+'" width="'+e[1]+'" height="'+e[2]+'" loading="lazy" decoding="async" alt="'+e["no"===f?5:4].replace(/"/g,"")+'"><span class="gt">'+e["no"===f?6:3]+"</span><figcaption>"+e["no"===f?5:4]+"</figcaption></button>"}).join(""),r(".gi").forEach(function(e){e.addEventListener("click",function(){var r;r=+e.dataset.i,ae=document.activeElement,se(r),ie.classList.add("open"),ie.setAttribute("aria-hidden","false"),document.body.style.overflow="hidden",t(".x",ie).focus()})}),ce(),ie.classList.contains("open")&&se(ne),y&&(u=!0,L(y),u&&P(C))}r("[data-i18n]").forEach(function(e){e.dataset.en=e.innerHTML}),r("[data-i18n-ph]").forEach(function(e){e.dataset.enph=e.getAttribute("placeholder")}),r(".lang button").forEach(function(e){e.addEventListener("click",function(){k(e.dataset.lang)})});var v="all",y=null,b=!1;function x(e){return e.cust.split("").map(function(e){return a[f].cust[e]}).join(" · ")}function M(){var e=t("#filters");e.innerHTML=["all","cur","mod","map","reg","env","pub"].map(function(e){var t="all"===e?i.length:i.filter(function(t){return t.cat===e}).length;return'<button type="button" role="tab" aria-selected="'+(v===e)+'" class="'+(v===e?"on":"")+'" data-c="'+e+'">'+("all"===e?a[f].all:a[f].cats[e])+' <span style="opacity:.55">'+t+"</span></button>"}).join(""),r("button",e).forEach(function(e){e.addEventListener("click",function(){v=e.dataset.c,b=!0,M(),S();var t=i.find(function(e){return"all"===v||e.cat===v});t&&O(t)})})}function S(){r(".pcard").forEach(function(e){var t=o[e.dataset.n-1];e.classList.toggle("hide",!("all"===v||t.cat===v))})}var w=t("#bigReport"),C=120,j=null;function F(e){var t=2*Math.PI/3;return 0===e?0:1===e?1:Math.pow(2,-10*e)*Math.sin((10*e-.75)*t)+1}function A(e){var t=1.70158;return(t+1)*e*e*e-t*e*e}function E(e,t,r,n,a,o){var i=performance.now();cancelAnimationFrame(j),function s(l){var d=Math.min((l-i)/r,1),c=n(d);a(e+(t-e)*c,d),d<1?j=requestAnimationFrame(s):o&&o()}(i)}function P(e,t){w.style.transform="translate(-50%,"+e+"%) rotate("+(t||0)+"deg)"}function L(e){t("#brNum").textContent="#"+String(e.n).padStart(2,"0"),t("#brCat").textContent=a[f].cats[e.cat].toUpperCase(),t("#brTitle").textContent=e.name[f],t("#brFor").textContent=a[f].forw+": "+x(e),t("#brDesc").textContent=e.desc[f],t("#brViz").innerHTML=m(e),t("#brNote").textContent=16===e.n||17===e.n?a[f].screen:a[f].std;var r=i.indexOf(e);t("#surfCount").textContent=r>=0?String(r+1).padStart(2,"0")+" / "+i.length:"#"+e.n+" / 50"}function O(n){if(!y||y.n!==n.n){if(y=n,r(".pcard").forEach(function(e){e.classList.toggle("on",+e.dataset.n===n.n)}),e)return L(n),void P(0);E(C,125,380,A,function(e){C=e,P(e,e/125*-4)},function(){var e;L(n),e=t("#surfFront"),H.splash(e.getBoundingClientRect().width/2,26),E(125,0,1300,F,function(e,t){C=e,P(e,Math.sin(12*t)*(1-t)*3)})})}}function T(e,t,r){var n=e.getContext("2d"),a=0,o=0,i=Math.min(window.devicePixelRatio||1,2);this.drops=[],this.t=0;var s=this;function l(){var t=e.getBoundingClientRect();a=t.width,o=t.height,e.width=a*i,e.height=o*i,n.setTransform(i,0,0,i,0,0)}l(),window.addEventListener("resize",l),this.y=function(e,t){return o*e.y+Math.sin(t*e.f+s.t*e.s+e.p)*e.a+Math.sin(t*e.f*1.7+s.t*e.s*.6+e.p+1)*e.a*.4},this.surfaceAt=function(e){return s.y(t[0],e)},this.splash=function(e,t){for(var r=s.surfaceAt(e),n=0;n<t;n++){var a=-Math.PI/2+2.2*(Math.random()-.5),o=2+4*Math.random();s.drops.push({x:e+60*(Math.random()-.5),y:r,vx:Math.cos(a)*o,vy:Math.sin(a)*o,l:1,r:1+2.6*Math.random()})}},this.draw=function(){n.clearRect(0,0,a,o),t.forEach(function(e){n.beginPath(),n.moveTo(0,o);for(var t=0;t<=a+6;t+=6)n.lineTo(t,s.y(e,t));n.lineTo(a,o),n.closePath();var r=n.createLinearGradient(0,o*e.y-e.a,0,o);if(r.addColorStop(0,e.c1),r.addColorStop(1,e.c2),n.fillStyle=r,n.fill(),e.line){n.beginPath();for(var i=0;i<=a+6;i+=6){var l=s.y(e,i);i?n.lineTo(i,l):n.moveTo(i,l)}n.strokeStyle=e.line,n.lineWidth=1.2,n.stroke()}}),r&&r.drops&&(s.drops.forEach(function(e){e.x+=e.vx,e.y+=e.vy,e.vy+=.16,e.l-=.018,n.beginPath(),n.arc(e.x,e.y,e.r,0,6.283),n.fillStyle="rgba(200,250,248,"+.85*Math.max(e.l,0)+")",n.fill()}),s.drops=s.drops.filter(function(e){return e.l>0})),s.t+=1}}t("#brAsk").addEventListener("click",function(){y&&(t("#fProd").value="p"+y.n,t("#fMsg").value=("no"===f?"Hei! Jeg vil gjerne høre mer om «":"Hi! I would like to know more about “")+y.name[f]+("no"===f?"».":"”."),t("#contact").scrollIntoView({behavior:"smooth"}),setTimeout(function(){t("#fName").focus({preventScroll:!0})},900))});var D=new T(t("#heroWaves"),[{y:.62,a:14,f:.012,s:.02,p:0,c1:"rgba(30,197,192,.35)",c2:"rgba(14,79,110,.9)",line:"rgba(220,255,252,.5)"},{y:.7,a:18,f:.008,s:.014,p:2,c1:"rgba(14,79,110,.6)",c2:"rgba(14,79,110,1)"}]),R=new T(t("#heroWavesFront"),[{y:.8,a:12,f:.014,s:.03,p:4,c1:"rgba(92,224,216,.55)",c2:"rgba(14,79,110,1)",line:"rgba(255,255,255,.6)"},{y:.9,a:8,f:.02,s:.04,p:1,c1:"rgba(14,79,110,.95)",c2:"#0e4f6e"}],{drops:!0}),I=new T(t("#surfBack"),[{y:.45,a:12,f:.015,s:.022,p:1,c1:"rgba(92,224,216,.3)",c2:"rgba(14,79,110,.8)",line:"rgba(220,255,252,.45)"}]),H=new T(t("#surfFront"),[{y:.62,a:12,f:.016,s:.032,p:3,c1:"rgba(30,197,192,.75)",c2:"rgba(13,143,138,1)",line:"rgba(255,255,255,.7)"},{y:.78,a:9,f:.022,s:.045,p:0,c1:"rgba(14,79,110,.95)",c2:"#0b3c57"}],{drops:!0});var N=t("#heroReports"),B=i.slice();function K(){if(!document.hidden&&!e){var t=N.getBoundingClientRect();if(!(t.bottom<0)){var r=B[Math.floor(Math.random()*B.length)],n=document.createElement("div");n.className="mini-report";var a=t.width*(.55+.38*Math.random());t.width<700&&(a=t.width*(.15+.7*Math.random())),n.style.left=a-56+"px",n.innerHTML='<div class="mr-h">#'+String(r.n).padStart(2,"0")+'</div><div class="mr-t">'+r.name[f]+"</div>"+m(r),N.appendChild(n);var o=performance.now(),i=1100,s=1900,l=-150-40*Math.random(),d=14*(Math.random()-.5);R.splash(a,18),function e(t){var r,c=t-o;if(c<i)r=40-(40-l)*F(c/i);else if(c<3e3)r=l+4*Math.sin((c-i)/300);else{if(!(c<3600))return void n.remove();var g=(c-i-s)/600;r=l+(200-l)*A(g),g>.5&&!n._s&&(n._s=1,R.splash(a,10))}n.style.transform="translateY("+(r+120)+"px) rotate("+(d*(1-Math.min(c/i,1))+2*Math.sin(c/500))+"deg)",requestAnimationFrame(e)}(o)}}}setInterval(K,2300),setTimeout(K,900),function(){for(var e,r,n=s(7),a=[],o=0;o<=30;o++)a.push([10*o,40+14*Math.sin(o/3)+12*(n()-.5)]);e=(r="M"+a.map(function(e){return e[0]+" "+e[1].toFixed(1)}).join(" L"))+" L300 80 L0 80Z",t("#heroSpark").setAttribute("d",e),t("#heroSparkL").setAttribute("d",r)}();var V,Y,G=t("#orca"),z=-40,q=40,W=0,U=1,Q=0,J=0,Z=t("#snow"),X=Z.getContext("2d"),_=[];function $(){V=Z.width=innerWidth,Y=Z.height=innerHeight;var e=innerWidth<700?35:80;_=[];for(var t=0;t<e;t++)_.push({x:Math.random()*V,y:Math.random()*Y,r:1.6*Math.random()+.3,v:.35*Math.random()+.08,w:6.28*Math.random(),z:Math.random()})}$(),addEventListener("resize",$);var ee=scrollY,te=0;requestAnimationFrame(function r(n){D.draw(),R.draw();var o=t("#surface").getBoundingClientRect();o.bottom>0&&o.top<innerHeight&&(I.draw(),H.draw());var i=function(){var e=document.documentElement.scrollHeight-innerHeight;return e>0?scrollY/e:0}();te+=.2*(scrollY-ee-te),ee=scrollY,X.clearRect(0,0,V,Y);var s=Math.min(1,1.6*i+.25);if(_.forEach(function(e){e.y+=e.v+.02*te*(e.z+.3)*-1,e.w+=.01,e.x+=.2*Math.sin(e.w),e.y>Y&&(e.y=-4),e.y<-5&&(e.y=Y),X.beginPath(),X.arc(e.x,e.y,e.r*(e.z+.5),0,6.283),X.fillStyle="rgba(200,240,238,"+(.15+.35*e.z)*s+")",X.fill()}),!e){var l=t("#hero").offsetHeight,d=document.documentElement.scrollHeight-innerHeight-l,c=Math.max(0,Math.min(1,(scrollY-.6*l)/Math.max(d,1)));G.classList.toggle("on",scrollY>.55*l&&c<.985),Q+=.004;var g=3*c%1,p=Math.floor(3*c),u=p%2==0?1:-1,m=u>0?150*g-45:105-150*g;m+=3*Math.sin(Q);var h=18+18*p+8*Math.sin(g*Math.PI*2)+2*Math.sin(1.3*Q),k=z+.06*(m-z),v=q+.06*(h-q),y=180*Math.atan2((v-q)*innerHeight/100,Math.abs(k-z)*innerWidth/100+.001)/Math.PI;W+=.08*(.6*(isFinite(y)?y:0)-W),U+=.08*(u-U),z=k,q=v,G.style.transform="translate("+z+"vw,"+q+"vh) scaleX("+U.toFixed(3)+") rotate("+(W*u).toFixed(2)+"deg)";var b=Math.abs(m-z);G.querySelector(".fluke").style.animationDuration=Math.max(.6,1.8-.08*b)+"s",G.classList.contains("on")&&n-J>2600&&b>.4&&(J=n,function(){for(var e=G.getBoundingClientRect(),t=U>0?e.left+.62*e.width:e.right-.62*e.width,r=e.top+.3*e.height,n=0;n<6;n++)(function(e){setTimeout(function(){var e=document.createElement("div");e.className="bubble";var n=4+9*Math.random();e.style.cssText="width:"+n+"px;height:"+n+"px;left:"+(t+16*(Math.random()-.5))+"px;top:"+r+"px;--dx:"+40*(Math.random()-.5)+"px",document.body.appendChild(e),setTimeout(function(){e.remove()},3300)},120*e)})(n)}())}var x=Math.round(320*i);t("#gVal").textContent=a[f].deep+" "+x+" m",t("#gDot").style.top=170*i+"px",t("#oceanBg").style.opacity=(1-.8*i).toFixed(3),t("#lightRays").style.opacity=Math.max(0,1-3*i).toFixed(3),t("#heroImg").style.transform="translateY("+.3*scrollY+"px) scale(1.05)";var M=t("#portraitImg"),S=M.getBoundingClientRect();S.bottom>0&&S.top<innerHeight&&(M.style.transform="scale(1.12) translateY("+-.04*(S.top-innerHeight/2)+"px)"),requestAnimationFrame(r)});var re=[["instrument-deploy",1170,1455,"FIELDWORK","Preparing an instrument for deployment","Klargjør et instrument for utsetting","FELTARBEID"],["grab-sampler",1170,1521,"AQUACULTURE SITE","Grab sampler for seabed sediment, with a fish farm in the background","Grabb for bunnprøver, med oppdrettsanlegg i bakgrunnen","OPPDRETTSLOKALITET"],["nabos-ice-station",448,299,"ARCTIC OCEAN","Ice station during the NABOS expedition","Isstasjon under NABOS-ekspedisjonen","POLHAVET"],["svalbard-longyearbyen",1600,1200,"SVALBARD","Above Longyearbyen during my study stay on Svalbard","Over Longyearbyen under studieoppholdet på Svalbard","SVALBARD"],["ctd-station",1200,1600,"HYDROGRAPHY","Ready for a CTD cast","Klar for CTD-profilering","HYDROGRAFI"],["team-deployment",1123,869,"NORWEGIAN FJORD","Team deployment from the deck crane","Utsetting med dekkskranen sammen med teamet","NORSK FJORD"],["arctic-ship-bow",1600,1200,"ARCTIC OCEAN","Research vessel heading north","Forskningsfartøy på vei nordover","POLHAVET"],["arctic-crane-ice",1200,1600,"ARCTIC OCEAN","Equipment lowered onto the sea ice","Utstyr senkes ned på sjøisen","POLHAVET"],["fjord-deck-crane",908,1600,"NORWEGIAN FJORD","Rough winter conditions in the fjord","Røft vintervær i fjorden","NORSK FJORD"],["arctic-sea-ice-selfie",1600,1200,"ARCTIC OCEAN","Breaking through the sea ice","Gjennom sjøisen","POLHAVET"],["fjord-selfie",907,1600,"NORWEGIAN FJORD","A sunny day on the way to a site","En solfylt dag på vei til lokaliteten","NORSK FJORD"],["deck-helmet",739,1600,"FIELDWORK","Coordinating work on deck","Koordinerer arbeidet på dekk","FELTARBEID"],["sunlit-deck",1600,1200,"AT SEA","Out at sea","Ute på havet","TIL SJØS"],["under-sail",1600,1200,"UNDER SAIL","At the helm","Ved roret","UNDER SEIL"]],ne=0,ae=null;function oe(e){return window.IMG_SRC&&window.IMG_SRC[e]||"images/"+e+".jpg"}var ie=t("#lb");function se(e){ne=(e+re.length)%re.length;var r=re[ne];t("#lbImg").src=oe(r[0]),t("#lbImg").alt=r["no"===f?5:4],t("#lbCap").innerHTML="<b>"+r["no"===f?6:3]+" · "+(ne+1)+" / "+re.length+"</b>"+r["no"===f?5:4]}function le(){ie.classList.remove("open"),ie.setAttribute("aria-hidden","true"),document.body.style.overflow="",ae&&ae.focus()}t(".x",ie).addEventListener("click",le),t(".pv",ie).addEventListener("click",function(){se(ne-1)}),t(".nx",ie).addEventListener("click",function(){se(ne+1)}),ie.addEventListener("click",function(e){e.target===ie&&le()}),addEventListener("keydown",function(e){ie.classList.contains("open")&&("Escape"===e.key&&le(),"ArrowLeft"===e.key&&se(ne-1),"ArrowRight"===e.key&&se(ne+1))});var de=null;function ce(){var e=+t("#rNet").value,r=+t("#rSea").value;r<e+5&&(r=e+5,t("#rSea").value=r);var n=Math.round(Math.min(e+(r-e)/2,e+50)),a=r-1;t("#oNet").textContent=e+" m",t("#oSea").textContent=r+" m",t("#vSpread").textContent=n+" m",t("#vBottom").textContent="≈ "+a+" m";var o=30,i=function(e){return o+e/r*350},s="no"===f?["Vannutskiftning","Dimensjonering","Spredning","Bunn","Merd","Sjøbunn"]:["Water exchange","Dimensioning","Spreading","Bottom","Net","Seabed"],l=[[5,s[0],"#5ce0d8"],[15,s[1],"#5ce0d8"],[n,s[2],"#ff8a6b"],[a,s[3],"#f3d9a4"]],d='<defs><linearGradient id="wc" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1ec5c0" stop-opacity=".45"/><stop offset="1" stop-color="#040b16" stop-opacity=".9"/></linearGradient></defs>';d+='<rect x="0" y="30" width="360" height="390" fill="url(#wc)" rx="14"/>',d+='<path d="M0 30 Q30 22 60 30 T120 30 T180 30 T240 30 T300 30 T360 30" stroke="#5ce0d8" stroke-width="2" fill="none"/>';var c=i(e);d+='<rect x="60" y="24" width="90" height="6" rx="3" fill="#c4dde4"/>',d+='<path d="M64 30 V'+(c-10)+" Q105 "+(c+8)+" 146 "+(c-10)+" V"+'30" fill="rgba(240,251,250,.08)" stroke="#c4dde4" stroke-dasharray="4 3"/>',d+='<text x="105" y="'+(o+(c-o)/2+4)+'" fill="#c4dde4" font-size="11" text-anchor="middle" font-family="Mulish,sans-serif">'+s[4]+" "+e+" m</text>",d+='<path d="M0 '+i(r)+" Q60 "+(i(r)-12)+" 120 "+(i(r)-4)+" T240 "+(i(r)-8)+" T360 "+(i(r)-2)+' V420 H0Z" fill="#6b5a3e"/>',d+='<text x="350" y="'+(i(r)+22)+'" fill="#f3d9a4" font-size="11" text-anchor="end" font-family="Mulish,sans-serif">'+s[5]+" "+r+" m</text>",d+='<line x1="200" y1="30" x2="200" y2="'+(i(r)-6)+'" stroke="#c4dde4" stroke-width="1.5"/>';var g=-99;l.forEach(function(e){var t=i(e[0]),r=Math.max(t,g+22);g=r,d+='<circle cx="200" cy="'+t+'" r="7" fill="'+e[2]+'" stroke="#040b16" stroke-width="2"/>',d+='<path d="M207 '+t+" L222 "+r+' H232" stroke="'+e[2]+'" fill="none" opacity=".6"/>',d+='<text x="236" y="'+(r+4)+'" fill="#f0fbfa" font-size="12" font-family="Mulish,sans-serif">'+e[1]+' · <tspan fill="'+e[2]+'" font-family="JetBrains Mono,monospace">'+Math.round(e[0])+" m</tspan></text>"}),t("#calcSvg").innerHTML=d}ie.addEventListener("touchstart",function(e){de=e.touches[0].clientX},{passive:!0}),ie.addEventListener("touchend",function(e){if(null!==de){var t=e.changedTouches[0].clientX-de;Math.abs(t)>50&&se(ne+(t<0?1:-1)),de=null}}),t("#rNet").addEventListener("input",ce),t("#rSea").addEventListener("input",ce);var ge=t("#nav");addEventListener("scroll",function(){ge.classList.toggle("scrolled",scrollY>40)},{passive:!0}),t("#burger").addEventListener("click",function(){var e=t("#navLinks").classList.toggle("open");this.setAttribute("aria-expanded",e)}),r("#navLinks a").forEach(function(e){e.addEventListener("click",function(){t("#navLinks").classList.remove("open")})});var pe=new IntersectionObserver(function(e){e.forEach(function(e){e.isIntersecting&&(e.target.classList.add("in"),pe.unobserve(e.target),r(".count",e.target).forEach(function(e){var t=+e.dataset.to,r=e.dataset.suf||"",n=performance.now();!function a(o){var i=Math.min((o-n)/1400,1);e.textContent=Math.round(t*(1-Math.pow(1-i,3)))+(1===i?r:""),i<1&&requestAnimationFrame(a)}(n)}))})},{threshold:.15});r(".reveal").forEach(function(e,t){e.style.transitionDelay=t%4*.08+"s",pe.observe(e)});var ue=["NS 9415","NYTEK","NewDEPOMOD","Delft3D FM","OSCAR","FD-format","Aquadopp","Signature 500","AquaPro","SeaGuard","ArcGIS Pro","Olex","Copernicus Marine","HYCOM","Python","Akvakulturregisteret","BarentsWatch"];t("#marquee").innerHTML=ue.concat(ue).map(function(e){return"<span>"+e+"</span>"}).join(""),t("#cform").addEventListener("submit",function(e){e.preventDefault();var r=t("#fName").value.trim(),n=t("#fEmail").value.trim();if(!r||!n)return alert(a[f].hint),void t(r?"#fEmail":"#fName").focus();var o=t("#fProd"),i=o.options[o.selectedIndex].text,s=t("#fCo").value.trim(),l=a[f].hello+"\n\n"+a[f].need+": "+i+"\n\n"+t("#fMsg").value+"\n\n— "+r+(s?", "+s:"")+"\n"+n;location.href="mailto:aletimoshina@gmail.com?subject="+encodeURIComponent(a[f].subject+": "+i)+"&body="+encodeURIComponent(l)}),t("#yr").textContent=(new Date).getFullYear();var me=!1;new IntersectionObserver(function(e){(me=e[0].isIntersecting)&&!y&&O(i[0])},{threshold:.35}).observe(t("#surface")),setInterval(function(){if(me&&!b&&!e&&!document.hidden){var t=i.filter(function(e){return"all"===v||e.cat===v}),r=t.indexOf(y);O(t[(r+1)%t.length])}},5200),P(125),k(f),e&&O(i[0])}();
+</script>
+</body>
+</html>
